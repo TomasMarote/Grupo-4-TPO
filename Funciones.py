@@ -153,10 +153,10 @@ def registrar_vehiculo(vehiculos):
     print("ID:", id_vehiculo)
     print("Marca:", marca)
     print("Modelo:", modelo)
-    print("Precio:", moneda, precio)
+    print("Precio:", moneda, precio) 
+
     
 def buscar_vehiculo(vehiculos):
-    def buscar_vehiculo(vehiculos):
 
     print("\n========== BUSCAR VEHÍCULO ==========")
 
