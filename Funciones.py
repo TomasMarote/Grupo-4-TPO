@@ -155,6 +155,30 @@ def registrar_vehiculo(vehiculos):
     print("Modelo:", modelo)
     print("Precio:", moneda, precio)
 def mostrar_vehiculos(vehiculos):
+     print("\n========== VEHÍCULOS DISPONIBLES ==========")
+
+    disponibles = False
+
+    for vehiculo in vehiculos:
+
+        if vehiculo["vendido"] == False:
+
+            disponibles = True
+
+            print("\n╔══════════════════════════════════════╗")
+            print(f"║          VEHÍCULO #{vehiculo['id']:<15}║")
+            print("╠══════════════════════════════════════╣")
+            print(f"║ Marca:       {vehiculo['marca']:<20}║")
+            print(f"║ Modelo:      {vehiculo['modelo']:<20}║")
+            print(f"║ Año:         {vehiculo['año']:<20}║")
+            print(f"║ Kilometraje: {vehiculo['kilometraje']:<20}║")
+            print(f"║ Combustible: {vehiculo['combustible']:<20}║")
+            print(f"║ Color:       {vehiculo['color']:<20}║")
+            print(f"║ Precio:      {vehiculo['moneda']} {vehiculo['precio']:<15}║")
+            print("╚══════════════════════════════════════╝")
+
+    if disponibles == False:
+        print("\nNo hay vehículos disponibles.")
         
 def buscar_vehiculo(vehiculos):
     def buscar_vehiculo(vehiculos):
