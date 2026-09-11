@@ -205,7 +205,6 @@ def buscar_vehiculo(vehiculos):
     if encontrado == False:
         print("\nNo se encontró ningún vehículo.")
 
-
 def registrar_venta(vehiculos):
 
     print("\n========== REGISTRAR VENTA ==========")
