@@ -154,7 +154,8 @@ def registrar_vehiculo(vehiculos):
     print("Marca:", marca)
     print("Modelo:", modelo)
     print("Precio:", moneda, precio)
-    
+def mostrar_vehiculos(vehiculos):
+        
 def buscar_vehiculo(vehiculos):
     def buscar_vehiculo(vehiculos):
 
