@@ -130,7 +130,7 @@ def registrar_vehiculo(vehiculos):
         except ValueError:
             print("Debe ingresar un número.")
 
-    # Crear vehículo
+    # Crear vehículo (diccionario)
     vehiculo = {
         "id": id_vehiculo,
         "marca": marca,
