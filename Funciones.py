@@ -50,7 +50,7 @@ def leer_precio(mensaje):
         try:
             precio = float(input(mensaje))
             # se excluyen infinito (inf) y valores no numericos (nan)
-            if 0 < precio < floay("inf"):
+            if 0 < precio < float("inf"):
                 valido = True 
             else:
                 print ("El precio debe ser un numero positivo y finito")
@@ -63,12 +63,12 @@ def leer_precio(mensaje):
 #Muestra un diccionario de opciones y devulee el valor elegido
 def elegir_producto(titulo, opciones):
     print(f"\n{titulo}")
-    for clave, valor in opciones,items(): 
+    for clave, valor in opciones.items(): 
         print(f"{clave}. {valor}")
     valida = True 
     while not valida:
         opcion = input("Seleccione una opcion: ").strip()
-        if opcion in opciones 
+        if opcion in opciones: 
             valida = True 
         else:
             print("Opcion Invalida.")
