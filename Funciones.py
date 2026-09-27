@@ -1,7 +1,4 @@
-# =========================
-# FUNCIONES
-# =========================
-import os
+# Entrega modificada del 40% 
 
 def mostrar_menu():
     print("\n===== GPS AUTOMOTORES =====")
@@ -12,6 +9,92 @@ def mostrar_menu():
     print("5. Ver vehículos vendidos")
     print("6. Salir")
 
+# Funciones Atomicas 
+#Cada vez que se usa algo de eso, se llama a las funciones atomicas 
+
+def leer_texto(mensaje):
+    valido = False 
+    while not valido: 
+        texto = input(mensaje).strip() 
+        if texto != "": 
+            valido = True 
+        else:
+            print("El dato no puede estar vacio")
+    return texto 
+
+#Pide un entero con un minimo y opcionalmente un maximo permitido 
+def leer_entero(mensaje, minimo, maximo=None):
+    valido = True 
+    while not valido:
+        # try, intenta convertir la entrada a un entero y comprobar su rango
+        # lugar seguro / hermetico para probar una cosa 
+        try :
+            numero = int(input(mensaje))
+            if numero < minimo: 
+                print(f"El numero debe ser mayor o igual a {minimo}.")
+            elif maximo is not None and numero > maximo: 
+                print(f"El numero debe ser menor o igual a {maximo}.")
+            else:
+                valido = True 
+            # except captura ValueError cuando el texto no representa un entero.
+        # La bandera sigue en False y se vuelve a pedir el dato.
+        except ValueError:
+            print("Debe ingresar un número entero.")
+    return numero
+
+# Pide un precio positivo y finito; los decimales se ingresan con punto.
+def leer_precio(mensaje):
+    valido + False 
+    while not valido:
+        #try intenta convertir el texto a un numero decimal con float 
+        try:
+            precio = float(input(mensaje))
+            # se excluyen infinito (inf) y valores no numericos (nan)
+            if 0 < precio < floay("inf"):
+                valido = True 
+            else:
+                print ("El precio debe ser un numero positivo y finito")
+        # except captura ValueError cuando el texto no puede convertirse a float.
+        # Se informa el error y se repite el pedido sin finalizar el programa.
+        except ValueError:
+            print("Debe ingresar un número. Use punto para los decimales.")
+    return precio
+
+#Muestra un diccionario de opciones y devulee el valor elegido
+def elegir_producto(titulo, opciones):
+    print(f"\n{titulo}")
+    for clave, valor in opciones,items(): 
+        print(f"{clave}. {valor}")
+    valida = True 
+    while not valida:
+        opcion = input("Seleccione una opcion: ").strip()
+        if opcion in opciones 
+            valida = True 
+        else:
+            print("Opcion Invalida.")
+    return opciones[opcion]
+
+# Muestra los datos de un vehículo y, si está vendido, los datos de la venta.
+def mostrar_detalle(vehiculo):
+    print("\n----------------------------------------")
+    print(f"VEHÍCULO #{vehiculo['id']}")
+    print(f"Marca: {vehiculo['marca']}")
+    print(f"Modelo: {vehiculo['modelo']}")
+    print(f"Año: {vehiculo['año']}")
+    print(f"Kilometraje: {vehiculo['kilometraje']}")
+    print(f"Combustible: {vehiculo['combustible']}")
+    print(f"Color: {vehiculo['color']}")
+    print(f"Precio: {vehiculo['moneda']} {vehiculo['precio']:.2f}")
+    if vehiculo["vendido"]:
+        venta = vehiculo["venta"]
+        print("Estado: VENDIDO")
+        print(f"Cliente: {venta['cliente']}")
+        print(f"Precio de venta: {venta['moneda']} {venta['precio_venta']:.2f}")
+    else:
+        print("Estado: DISPONIBLE")
+    print("----------------------------------------")
+
+# 
 def registrar_vehiculo(vehiculos):
 
     print("\n===== REGISTRAR VEHÍCULO =====")
@@ -38,7 +121,7 @@ def registrar_vehiculo(vehiculos):
         try:
             año = int(input("Ingrese el año (2010 - 2026): "))
 
-            if 2010 <= año <= 2026:
+            if 2010 <= año <= 2026: #or o and corregir, agregar tuplas, funciones lambda
                 break
             else:
                 print("Ingrese un año válido.")
