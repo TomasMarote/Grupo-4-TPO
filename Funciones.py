@@ -398,36 +398,7 @@ def registrar_venta(vehiculos):
     print("\nNo existe un vehículo con ese ID.")
 
 def mostrar_vendidos(vehiculos):
-
-    print("\n========== VEHÍCULOS VENDIDOS ==========")
-
-    vendidos = False
-
-    for vehiculo in vehiculos:
-
-        if vehiculo["vendido"]:
-
-            vendidos = True
-
-            venta = vehiculo["venta"]
-
-            print("\n╔══════════════════════════════════════╗")
-            print(f"║          VEHÍCULO #{vehiculo['id']:<15}║")
-            print("╠══════════════════════════════════════╣")
-            print(f"║ Marca:       {vehiculo['marca']:<20}║")
-            print(f"║ Modelo:      {vehiculo['modelo']:<20}║")
-            print(f"║ Año:         {vehiculo['año']:<20}║")
-            print(f"║ Kilometraje: {vehiculo['kilometraje']:<20}║")
-            print(f"║ Combustible: {vehiculo['combustible']:<20}║")
-            print(f"║ Color:       {vehiculo['color']:<20}║")
-            print("╠══════════════════════════════════════╣")
-            print(f"║ Cliente:     {venta['cliente']:<20}║")
-            print(
-                f"║ Precio venta: {venta['moneda']} "
-                f"{venta['precio_venta']:<14}║"
-            )
-            print("║ Estado:      VENDIDO                ║")
-            print("╚══════════════════════════════════════╝")
-
+    print("\n===== VEHÍCULOS VENDIDOS =====")
+    vendidos = mostrar_por_estado(vehiculos, True)
     if not vendidos:
-        print("\nNo hay vehículos vendidos.")
+        print("No hay vehículos vendidos.")
