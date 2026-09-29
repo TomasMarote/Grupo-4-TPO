@@ -9,7 +9,7 @@ def mostrar_menu():
     print("5. Ver vehículos vendidos")
     print("6. Salir")
 
-# Funciones Atomicas 
+# Funciones Atomicas / Auxiliares
 #Cada vez que se usa algo de eso, se llama a las funciones atomicas 
 
 def leer_texto(mensaje):
