@@ -314,7 +314,19 @@ def buscar_vehiculo(vehiculos):
 
     if encontrado == False:
         print("\nNo se encontró ningún vehículo.")
-
+        
+def buscar_por_id(vehiculos, id_vehiculo):
+    resultado = None
+    encontrado = False
+    posicion = 0
+    while posicion < len(vehiculos) and not encontrado:
+        if vehiculos[posicion]["id"] == id_vehiculo:
+            resultado = vehiculos[posicion]
+            encontrado = True
+        else:
+            posicion += 1
+    return resultado
+    
 def registrar_venta(vehiculos):
 
     print("\n========== REGISTRAR VENTA ==========")
