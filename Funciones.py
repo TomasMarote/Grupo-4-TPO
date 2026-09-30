@@ -238,6 +238,14 @@ def registrar_vehiculo(vehiculos):
     print("Modelo:", modelo)
     print("Precio:", moneda, precio)
     
+def mostrar_por_estado(vehiculos, vendido):
+    encontrado = False
+    for vehiculo in vehiculos:
+        if vehiculo["vendido"] == vendido:
+            mostrar_detalle(vehiculo)
+            encontrado = True
+    return encontrado
+    
 def mostrar_vehiculos(vehiculos):
 
     print("\n========== VEHÍCULOS DISPONIBLES ==========")
@@ -326,7 +334,7 @@ def buscar_por_id(vehiculos, id_vehiculo):
         else:
             posicion += 1
     return resultado
-    
+
 def registrar_venta(vehiculos):
 
     print("\n========== REGISTRAR VENTA ==========")
