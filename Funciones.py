@@ -95,127 +95,23 @@ def mostrar_detalle(vehiculo):
     print("----------------------------------------")
 
 # 
+# Solicita los datos, crea el diccionario del vehículo y lo agrega a la lista.
 def registrar_vehiculo(vehiculos):
-
     print("\n===== REGISTRAR VEHÍCULO =====")
+    marca = leer_texto("Ingrese la marca: ")
+    modelo = leer_texto("Ingrese el modelo: ")
+    año = leer_entero("Ingrese el año (2010 - 2026): ", 2010, 2026)
+    kilometraje = leer_entero("Ingrese el kilometraje: ", 0)
+    combustible = elegir_opcion("Tipo de combustible:", {
+        "1": "Nafta", "2": "Diésel", "3": "Híbrido", "4": "Eléctrico"
+    })
+    color = leer_texto("Ingrese el color: ")
+    moneda = elegir_opcion("Moneda del precio:", {"1": "ARS", "2": "USD"})
+    precio = leer_precio(f"Ingrese el precio en {moneda}: ")
 
-    # ID automático
-    id_vehiculo = len(vehiculos) 
-
-    # Marca
-    marca = input("Ingrese la marca: ").strip()
-
-    while marca == "":
-        print("La marca no puede estar vacía.")
-        marca = input("Ingrese la marca: ").strip()
-
-    # Modelo
-    modelo = input("Ingrese el modelo: ").strip()
-
-    while modelo == "":
-        print("El modelo no puede estar vacío.")
-        modelo = input("Ingrese el modelo: ").strip()
-
-    # Año
-    while True:
-        try:
-            año = int(input("Ingrese el año (2010 - 2026): "))
-
-            if 2010 <= año <= 2026: #or o and corregir, agregar tuplas, funciones lambda
-                break
-            else:
-                print("Ingrese un año válido.")
-
-        except ValueError:
-            print("Debe ingresar un número.")
-
-    # Kilometraje
-    while True:
-        try:
-            kilometraje = int(input("Ingrese el kilometraje: "))
-
-            if kilometraje >= 0:
-                break
-            else:
-                print("El kilometraje no puede ser negativo.")
-
-        except ValueError:
-            print("Debe ingresar un número.")
-
-    # Combustible
-    print("\nTipo de combustible:")
-    print("1. Nafta")
-    print("2. Diésel")
-    print("3. Híbrido")
-    print("4. Eléctrico")
-
-    while True:
-
-        opcion_combustible = input("Seleccione una opción: ")
-
-        if opcion_combustible == "1":
-            combustible = "Nafta"
-            break
-
-        elif opcion_combustible == "2":
-            combustible = "Diésel"
-            break
-
-        elif opcion_combustible == "3":
-            combustible = "Híbrido"
-            break
-
-        elif opcion_combustible == "4":
-            combustible = "Eléctrico"
-            break
-
-        else:
-            print("Opción inválida.")
-
-    # Color
-    color = input("\nIngrese el color: ").strip()
-
-    while color == "":
-        print("El color no puede estar vacío.")
-        color = input("Ingrese el color: ").strip()
-
-    # Moneda
-    print("\nMoneda del precio:")
-    print("1. Pesos argentinos (ARS)")
-    print("2. Dólares estadounidenses (USD)")
-
-    while True:
-
-        opcion_moneda = input("Seleccione una opción: ")
-
-        if opcion_moneda == "1":
-            moneda = "ARS"
-            break
-
-        elif opcion_moneda == "2":
-            moneda = "USD"
-            break
-
-        else:
-            print("Opción inválida.")
-
-    # Precio
-    while True:
-
-        try:
-            precio = float(input(f"Ingrese el precio en {moneda}: "))
-
-            if precio > 0:
-                break
-            else:
-                print("El precio debe ser mayor a 0.")
-
-        except ValueError:
-            print("Debe ingresar un número.")
-
-    # Crear vehículo (diccionario)
+    # Conservamos IDs desde 0. len sirve aquí porque no se eliminan vehículos.
     vehiculo = {
-        "id": id_vehiculo,
+        "id": len(vehiculos),
         "marca": marca,
         "modelo": modelo,
         "año": año,
@@ -226,17 +122,10 @@ def registrar_vehiculo(vehiculos):
         "moneda": moneda,
         "vendido": False
     }
-
-    # Agregar vehículo a la lista
     vehiculos.append(vehiculo)
+    print("\nVEHÍCULO REGISTRADO CORRECTAMENTE")
+    mostrar_detalle(vehiculo)
 
-    print("\n================================")
-    print(" VEHÍCULO REGISTRADO CORRECTAMENTE")
-    print("================================")
-    print("ID:", id_vehiculo)
-    print("Marca:", marca)
-    print("Modelo:", modelo)
-    print("Precio:", moneda, precio)
     
 def mostrar_por_estado(vehiculos, vendido):
     encontrado = False
@@ -273,55 +162,22 @@ def mostrar_vehiculos(vehiculos):
     if disponibles == False:
         print("\nNo hay vehículos disponibles.")
 
+# Busca por ID exacto o por parte de la marca o modelo, sin distinguir mayúsculas.
 def buscar_vehiculo(vehiculos):
-
-    print("\n========== BUSCAR VEHÍCULO ==========")
-
+    print("\n===== BUSCAR VEHÍCULO =====")
     if len(vehiculos) == 0:
         print("No hay vehículos registrados.")
         return
-
-    busqueda = input(
-        "Ingrese ID, marca o modelo del vehículo: "
-    ).strip().lower()
-
+    busqueda = leer_texto("Ingrese ID, marca o modelo del vehículo: ").lower()
     encontrado = False
-
     for vehiculo in vehiculos:
-
-        id_vehiculo = str(vehiculo["id"])
-        marca = vehiculo["marca"].lower()
-        modelo = vehiculo["modelo"].lower()
-
-        if (
-            busqueda == id_vehiculo
-            or busqueda in marca
-            or busqueda in modelo
-        ):
-
+        if (busqueda == str(vehiculo["id"])
+                or busqueda in vehiculo["marca"].lower()
+                or busqueda in vehiculo["modelo"].lower()):
+            mostrar_detalle(vehiculo)
             encontrado = True
-
-            print("\n╔══════════════════════════════════════╗")
-            print(f"║          VEHÍCULO #{vehiculo['id']:<15}║")
-            print("╠══════════════════════════════════════╣")
-            print(f"║ Marca:       {vehiculo['marca']:<20}║")
-            print(f"║ Modelo:      {vehiculo['modelo']:<20}║")
-            print(f"║ Año:         {vehiculo['año']:<20}║")
-            print(f"║ Kilometraje: {vehiculo['kilometraje']:<20}║")
-            print(f"║ Combustible: {vehiculo['combustible']:<20}║")
-            print(f"║ Color:       {vehiculo['color']:<20}║")
-            print(f"║ Precio:      {vehiculo['moneda']} {vehiculo['precio']:<15}║")
-
-            if vehiculo["vendido"]:
-                estado = "VENDIDO"
-            else:
-                estado = "DISPONIBLE"
-
-            print(f"║ Estado:      {estado:<20}║")
-            print("╚══════════════════════════════════════╝")
-
-    if encontrado == False:
-        print("\nNo se encontró ningún vehículo.")
+    if not encontrado:
+        print("No se encontró ningún vehículo.")
         
 def buscar_por_id(vehiculos, id_vehiculo):
     resultado = None
@@ -335,87 +191,36 @@ def buscar_por_id(vehiculos, id_vehiculo):
             posicion += 1
     return resultado
 
+# Registra el cliente y el precio de venta, y cambia el estado a vendido.
 def registrar_venta(vehiculos):
-
-    print("\n========== REGISTRAR VENTA ==========")
-
+    print("\n===== REGISTRAR VENTA =====")
     if len(vehiculos) == 0:
         print("No hay vehículos registrados.")
         return
+    disponibles = mostrar_vehiculos(vehiculos)
+    if not disponibles:
+        return
 
-    # Mostrar vehículos disponibles
-    mostrar_vehiculos(vehiculos)
+    id_venta = leer_entero("Ingrese el ID del vehículo vendido: ", 0)
+    vehiculo = buscar_por_id(vehiculos, id_venta)
+    if vehiculo is None:
+        print("No existe un vehículo con ese ID.")
+    elif vehiculo["vendido"]:
+        print("Este vehículo ya fue vendido.")
+    else:
+        cliente = leer_texto("Ingrese el nombre del cliente: ")
+        precio_venta = leer_precio(f"Ingrese el precio de venta en {vehiculo['moneda']}: ")
+        # Los datos de la venta forman un diccionario dentro del vehículo.
+        vehiculo["venta"] = {
+            "cliente": cliente,
+            "precio_venta": precio_venta,
+            "moneda": vehiculo["moneda"]
+        }
+        vehiculo["vendido"] = True
+        print("\nVENTA REGISTRADA")
+        mostrar_detalle(vehiculo)
 
-    # Pedir ID del vehículo
-    while True:
-
-        try:
-            id_venta = int(input("\nIngrese el ID del vehículo vendido: "))
-            break
-
-        except ValueError:
-            print("El ID debe ser un número.")
-
-    # Buscar el vehículo
-    for vehiculo in vehiculos:
-
-        if vehiculo["id"] == id_venta:
-
-            # Verificar si ya fue vendido
-            if vehiculo["vendido"]:
-                print("\nEste vehículo ya fue vendido.")
-                return
-
-            print("\n--- DATOS DE LA VENTA ---")
-
-            # Cliente
-            cliente = input("Ingrese el nombre del cliente: ").strip()
-
-            while cliente == "":
-                print("El nombre no puede estar vacío.")
-                cliente = input("Ingrese el nombre del cliente: ").strip()
-
-            # Precio de venta
-            while True:
-
-                try:
-                    precio_venta = float(
-                        input(
-                            f"Ingrese el precio de venta "
-                            f"en {vehiculo['moneda']}: "
-                        )
-                    )
-
-                    if precio_venta > 0:
-                        break
-
-                    print("El precio debe ser mayor a 0.")
-
-                except ValueError:
-                    print("Debe ingresar un número.")
-
-            # Registrar la venta
-            vehiculo["vendido"] = True
-
-            vehiculo["venta"] = {
-                "cliente": cliente,
-                "precio_venta": precio_venta,
-                "moneda": vehiculo["moneda"]
-            }
-
-            print("\n================================")
-            print("       VENTA REGISTRADA")
-            print("================================")
-            print("ID:", vehiculo["id"])
-            print("Vehículo:", vehiculo["marca"], vehiculo["modelo"])
-            print("Cliente:", cliente)
-            print("Precio de venta:",
-                  vehiculo["moneda"], precio_venta)
-            print("Estado: VENDIDO")
-
-            return
-
-    print("\nNo existe un vehículo con ese ID.")
+    
 
 def mostrar_vendidos(vehiculos):
     print("\n===== VEHÍCULOS VENDIDOS =====")
