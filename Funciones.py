@@ -61,17 +61,17 @@ def leer_precio(mensaje):
     return precio
 
 #Muestra un diccionario de opciones y devulee el valor elegido
-def elegir_producto(titulo, opciones):
+def elegir_opcion(titulo, opciones):
     print(f"\n{titulo}")
-    for clave, valor in opciones.items(): 
+    for clave, valor in opciones.items():
         print(f"{clave}. {valor}")
-    valida = True 
+    valida = False
     while not valida:
-        opcion = input("Seleccione una opcion: ").strip()
-        if opcion in opciones: 
-            valida = True 
+        opcion = input("Seleccione una opción: ").strip()
+        if opcion in opciones:
+            valida = True
         else:
-            print("Opcion Invalida.")
+            print("Opción inválida.")
     return opciones[opcion]
 
 # Muestra los datos de un vehículo y, si está vendido, los datos de la venta.
@@ -200,9 +200,7 @@ def registrar_venta(vehiculos):
         vehiculo["vendido"] = True
         print("\nVENTA REGISTRADA")
         mostrar_detalle(vehiculo)
-
     
-
 def mostrar_vendidos(vehiculos):
     print("\n===== VEHÍCULOS VENDIDOS =====")
     vendidos = mostrar_por_estado(vehiculos, True)
