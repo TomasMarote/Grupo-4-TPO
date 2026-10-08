@@ -135,32 +135,13 @@ def mostrar_por_estado(vehiculos, vendido):
             encontrado = True
     return encontrado
     
+# Muestra los disponibles y devuelve una bandera que indica si hay alguno.
 def mostrar_vehiculos(vehiculos):
-
-    print("\n========== VEHÍCULOS DISPONIBLES ==========")
-
-    disponibles = False
-
-    for vehiculo in vehiculos:
-
-        if vehiculo["vendido"] == False:
-
-            disponibles = True
-
-            print("\n╔══════════════════════════════════════╗")
-            print(f"║          VEHÍCULO #{vehiculo['id']:<15}║")
-            print("╠══════════════════════════════════════╣")
-            print(f"║ Marca:       {vehiculo['marca']:<20}║")
-            print(f"║ Modelo:      {vehiculo['modelo']:<20}║")
-            print(f"║ Año:         {vehiculo['año']:<20}║")
-            print(f"║ Kilometraje: {vehiculo['kilometraje']:<20}║")
-            print(f"║ Combustible: {vehiculo['combustible']:<20}║")
-            print(f"║ Color:       {vehiculo['color']:<20}║")
-            print(f"║ Precio:      {vehiculo['moneda']} {vehiculo['precio']:<15}║")
-            print("╚══════════════════════════════════════╝")
-
-    if disponibles == False:
-        print("\nNo hay vehículos disponibles.")
+    print("\n===== VEHÍCULOS DISPONIBLES =====")
+    disponibles = mostrar_por_estado(vehiculos, False)
+    if not disponibles:
+        print("No hay vehículos disponibles.")
+    return disponibles
 
 # Busca por ID exacto o por parte de la marca o modelo, sin distinguir mayúsculas.
 def buscar_vehiculo(vehiculos):
