@@ -8,6 +8,16 @@ def mostrar_menu():
     print("4. Registrar venta")
     print("5. Ver vehículos vendidos")
     print("6. Salir")
+    print("7. Modificar un vehículo")
+    print("8. Eliminar un vehículo")
+    print("9. Filtrar disponibles por precio")
+    print("10. Filtrar disponibles por año mínimo")
+    print("11. Filtrar disponibles por combustible")
+    print("12. Ordenar vehículos por precio o kilometraje")
+    print("13. Mostrar resumen del stock")
+    print("14. Mostrar disponibles de menor y mayor precio")
+    print("15. Consultar historial de ventas")
+    print("16. Consultar detalle por ID")
 
 # Funciones Atomicas / Auxiliares
 #Cada vez que se usa algo de eso, se llama a las funciones atomicas 
@@ -172,8 +182,8 @@ def buscar_por_id(vehiculos, id_vehiculo):
             posicion += 1
     return resultado
 
-# Registra el cliente y el precio de venta, y cambia el estado a vendido.
-def registrar_venta(vehiculos):
+# Pide datos opcionales, calcula el descuento y guarda la venta si se confirma.
+def registrar_venta(vehiculos, historial):
     print("\n===== REGISTRAR VENTA =====")
     if len(vehiculos) == 0:
         print("No hay vehículos registrados.")
@@ -190,15 +200,32 @@ def registrar_venta(vehiculos):
         print("Este vehículo ya fue vendido.")
     else:
         cliente = leer_texto("Ingrese el nombre del cliente: ")
-        precio_venta = leer_precio(f"Ingrese el precio de venta en {vehiculo['moneda']}: ")
+        dni = input("DNI del cliente (Enter para omitir): ").strip()
+        telefono = input("Teléfono del cliente (Enter para omitir): ").strip()
+        precio_base = leer_precio(f"Ingrese el precio de venta en {vehiculo['moneda']}: ")
+        descuento = leer_descuento()
+        precio_venta = calcular_precio_final(precio_base, descuento)
+        print(f"Precio final: {vehiculo['moneda']} {precio_venta:.2f}")
+        if not confirmar("¿Confirmar la venta?"):
+            print("Venta cancelada. El vehículo sigue disponible.")
+            return
         # Los datos de la venta forman un diccionario dentro del vehículo.
         vehiculo["venta"] = {
             "cliente": cliente,
+            "dni": dni,
+            "telefono": telefono,
+            "precio_base": precio_base,
+            "descuento": descuento,
             "precio_venta": precio_venta,
             "moneda": vehiculo["moneda"]
         }
         vehiculo["vendido"] = True
+        # Copias independientes: modificar o eliminar el vehículo no borra la venta.
+        registro = vehiculo.copy()
+        registro["venta"] = vehiculo["venta"].copy()
+        historial.append(registro)
         print("\nVENTA REGISTRADA")
+        mostrar_detalle(vehiculo)
         mostrar_detalle(vehiculo)
     
 def mostrar_vendidos(vehiculos):
@@ -206,3 +233,9 @@ def mostrar_vendidos(vehiculos):
     vendidos = mostrar_por_estado(vehiculos, True)
     if not vendidos:
         print("No hay vehículos vendidos.")
+
+# Devuelve True para confirmar y False para cancelar; valida la respuesta.
+def confirmar(mensaje):
+    respuesta = elegir_opcion(mensaje, {"1": "Sí", "2": "No"})
+    return respuesta == "Sí"
+
