@@ -239,3 +239,24 @@ def confirmar(mensaje):
     respuesta = elegir_opcion(mensaje, {"1": "Sí", "2": "No"})
     return respuesta == "Sí"
 
+# Pide un porcentaje entre 0 y 100; Enter equivale a no aplicar descuento.
+def leer_descuento():
+    valido = False
+    descuento = 0
+    while not valido:
+        texto = input("Descuento de 0 a 100% (Enter para omitir): ").strip()
+        if texto == "":
+            descuento = 0
+            valido = True
+        else:
+            # try intenta convertir el porcentaje escrito a un decimal.
+            try:
+                descuento = float(texto)
+                if 0 <= descuento <= 100:
+                    valido = True
+                else:
+                    print("El descuento debe estar entre 0 y 100.")
+            # except captura texto no numérico y permite volver a intentar.
+            except ValueError:
+                print("Debe ingresar un número. Use punto para los decimales.")
+    return descuento
