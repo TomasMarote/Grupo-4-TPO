@@ -279,3 +279,24 @@ def solicitar_vehiculo(vehiculos):
     if vehiculo is None:
         print("No existe un vehículo con ese ID.")
     return vehiculo
+
+# Permite actualizar únicamente precio, color, kilometraje o año (F-13).
+def modificar_vehiculo(vehiculos):
+    vehiculo = solicitar_vehiculo(vehiculos)
+    if vehiculo is None:
+        return
+    mostrar_detalle(vehiculo)
+    campo = elegir_opcion("Dato a modificar:", {
+        "1": "precio", "2": "color", "3": "kilometraje", "4": "año"
+    })
+    if campo == "precio":
+        nuevo = leer_precio(f"Nuevo precio en {vehiculo['moneda']}: ")
+    elif campo == "color":
+        nuevo = leer_texto("Nuevo color: ")
+    elif campo == "kilometraje":
+        nuevo = leer_entero("Nuevo kilometraje: ", 0)
+    else:
+        nuevo = leer_entero("Nuevo año (2010 - 2026): ", 2010, 2026)
+    vehiculo[campo] = nuevo
+    print("Vehículo modificado. Los datos de una venta previa no cambian.")
+    mostrar_detalle(vehiculo)
