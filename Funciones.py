@@ -260,3 +260,12 @@ def leer_descuento():
             except ValueError:
                 print("Debe ingresar un número. Use punto para los decimales.")
     return descuento
+
+# calcular precio con descuento y redondear a dos decimales 
+def calcular_precio_final(precio, descuento): 
+    return round(precio * (1 - descuento / 100), 2)
+
+# pide la moneda para no comparar importes de pesos con importe de dolares 
+def seleccionar_moneda(): 
+    return elegir_opcion("Seleccione la moenda:", {"1": "ARS", "2": "USD"})
+
