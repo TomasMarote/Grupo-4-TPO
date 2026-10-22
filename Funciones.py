@@ -269,3 +269,13 @@ def calcular_precio_final(precio, descuento):
 def seleccionar_moneda(): 
     return elegir_opcion("Seleccione la moenda:", {"1": "ARS", "2": "USD"})
 
+# Solicita un ID y devuelve su vehículo, o None si no puede encontrarlo.
+def solicitar_vehiculo(vehiculos):
+    if len(vehiculos) == 0:
+        print("No hay vehículos registrados.")
+        return None
+    id_vehiculo = leer_entero("Ingrese el ID del vehículo: ", 0)
+    vehiculo = buscar_por_id(vehiculos, id_vehiculo)
+    if vehiculo is None:
+        print("No existe un vehículo con ese ID.")
+    return vehiculo
