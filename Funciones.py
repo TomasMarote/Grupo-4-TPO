@@ -300,3 +300,15 @@ def modificar_vehiculo(vehiculos):
     vehiculo[campo] = nuevo
     print("Vehículo modificado. Los datos de una venta previa no cambian.")
     mostrar_detalle(vehiculo)
+
+    # Elimina solo el vehículo seleccionado si el usuario confirma (F-14).
+def eliminar_vehiculo(vehiculos):
+    vehiculo = solicitar_vehiculo(vehiculos)
+    if vehiculo is None:
+        return
+    mostrar_detalle(vehiculo)
+    if confirmar("¿Eliminar este vehículo? Su venta, si existe, queda en el historial."):
+        vehiculos.remove(vehiculo)
+        print("Vehículo eliminado.")
+    else:
+        print("Eliminación cancelada.")
