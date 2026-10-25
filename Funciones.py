@@ -312,3 +312,16 @@ def eliminar_vehiculo(vehiculos):
         print("Vehículo eliminado.")
     else:
         print("Eliminación cancelada.")
+
+# Devuelve una lista de disponibles sin modificar la lista original.
+def obtener_disponibles(vehiculos):
+    return [vehiculo for vehiculo in vehiculos if not vehiculo["vendido"]]
+
+
+# Muestra una lista de resultados o avisa que no hay coincidencias.
+def mostrar_resultados(resultados):
+    if len(resultados) == 0:
+        print("No hay vehículos que coincidan con la consulta.")
+    else:
+        for vehiculo in resultados:
+            mostrar_detalle(vehiculo)
