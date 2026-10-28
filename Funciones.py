@@ -325,3 +325,23 @@ def mostrar_resultados(resultados):
     else:
         for vehiculo in resultados:
             mostrar_detalle(vehiculo)
+
+# Filtra disponibles por moneda y rango inclusivo usando filter y lambda (F-15).
+def filtrar_por_precio(vehiculos, moneda, minimo, maximo):
+    disponibles = obtener_disponibles(vehiculos)
+    return list(filter(lambda vehiculo: vehiculo["moneda"] == moneda
+                       and minimo <= vehiculo["precio"] <= maximo, disponibles))
+
+
+# Solicita un rango válido de precios y muestra los resultados del filtro.
+def consultar_por_precio(vehiculos):
+    moneda = seleccionar_moneda()
+    minimo = leer_precio("Precio mínimo (mayor que cero): ")
+    valido = False
+    while not valido:
+        maximo = leer_precio("Precio máximo: ")
+        if maximo >= minimo:
+            valido = True
+        else:
+            print("El máximo no puede ser menor que el mínimo.")
+    mostrar_resultados(filtrar_por_precio(vehiculos, moneda, minimo, maximo))
