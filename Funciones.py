@@ -373,3 +373,13 @@ def ordenar_vehiculos(vehiculos, campo, descendente, moneda=None):
         resultado = [vehiculo for vehiculo in resultado if vehiculo["moneda"] == moneda]
         resultado.sort(key=lambda vehiculo: vehiculo[campo], reverse=descendente)
     return resultado
+
+def consultar_ordenados(vehiculos):
+    campo = elegir_opcion("Ordenar todos los registrados por:", {
+        "1": "precio", "2": "kilometraje"
+    })
+    sentido = elegir_opcion("Sentido del orden:", {"1": "Ascendente", "2": "Descendente"})
+    moneda = None
+    if campo == "precio":
+        moneda = seleccionar_moneda()
+    mostrar_resultados(ordenar_vehiculos(vehiculos, campo, sentido == "Descendente", moneda))
