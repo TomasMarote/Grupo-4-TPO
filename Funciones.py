@@ -383,3 +383,11 @@ def consultar_ordenados(vehiculos):
     if campo == "precio":
         moneda = seleccionar_moneda()
     mostrar_resultados(ordenar_vehiculos(vehiculos, campo, sentido == "Descendente", moneda))
+
+def calcular_resumen(vehiculos):
+    vendidos = 0
+    for vehiculo in vehiculos:
+        if vehiculo["vendido"]:
+            vendidos += 1
+    return {"total": len(vehiculos), "disponibles": len(vehiculos) - vendidos,
+            "vendidos": vendidos}
