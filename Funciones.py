@@ -366,3 +366,10 @@ def consultar_por_combustible(vehiculos):
         "1": "Nafta", "2": "Diésel", "3": "Híbrido", "4": "Eléctrico"
     })
     mostrar_resultados(filtrar_por_combustible(vehiculos, combustible))
+
+def ordenar_vehiculos(vehiculos, campo, descendente, moneda=None):
+    resultado = vehiculos.copy()
+    if campo == "precio":
+        resultado = [vehiculo for vehiculo in resultado if vehiculo["moneda"] == moneda]
+        resultado.sort(key=lambda vehiculo: vehiculo[campo], reverse=descendente)
+    return resultado
