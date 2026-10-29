@@ -345,3 +345,8 @@ def consultar_por_precio(vehiculos):
         else:
             print("El máximo no puede ser menor que el mínimo.")
     mostrar_resultados(filtrar_por_precio(vehiculos, moneda, minimo, maximo))
+
+# Filtra disponibles cuyo año sea igual o superior al mínimo (F-16).
+def filtrar_por_año(vehiculos, año_minimo):
+    return list(filter(lambda vehiculo: vehiculo["año"] >= año_minimo,
+                       obtener_disponibles(vehiculos)))
