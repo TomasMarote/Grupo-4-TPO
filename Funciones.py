@@ -360,3 +360,9 @@ def consultar_por_año(vehiculos):
 def filtrar_por_combustible(vehiculos, combustible):
     return list(filter(lambda vehiculo: vehiculo["combustible"] == combustible,
                        obtener_disponibles(vehiculos)))
+
+def consultar_por_combustible(vehiculos):
+    combustible = elegir_opcion("Tipo de combustible:", {
+        "1": "Nafta", "2": "Diésel", "3": "Híbrido", "4": "Eléctrico"
+    })
+    mostrar_resultados(filtrar_por_combustible(vehiculos, combustible))
