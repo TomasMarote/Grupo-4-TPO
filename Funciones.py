@@ -355,3 +355,8 @@ def filtrar_por_año(vehiculos, año_minimo):
 def consultar_por_año(vehiculos):
     año_minimo = leer_entero("Año mínimo (2010 - 2026): ", 2010, 2026)
     mostrar_resultados(filtrar_por_año(vehiculos, año_minimo))
+
+# Filtra disponibles por el combustible elegido (F-17).
+def filtrar_por_combustible(vehiculos, combustible):
+    return list(filter(lambda vehiculo: vehiculo["combustible"] == combustible,
+                       obtener_disponibles(vehiculos)))
