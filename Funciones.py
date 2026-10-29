@@ -350,3 +350,8 @@ def consultar_por_precio(vehiculos):
 def filtrar_por_año(vehiculos, año_minimo):
     return list(filter(lambda vehiculo: vehiculo["año"] >= año_minimo,
                        obtener_disponibles(vehiculos)))
+
+# Pide el año mínimo y muestra los vehículos disponibles que lo cumplen.
+def consultar_por_año(vehiculos):
+    año_minimo = leer_entero("Año mínimo (2010 - 2026): ", 2010, 2026)
+    mostrar_resultados(filtrar_por_año(vehiculos, año_minimo))
