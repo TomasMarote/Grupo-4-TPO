@@ -360,3 +360,97 @@ def consultar_por_año(vehiculos):
 def filtrar_por_combustible(vehiculos, combustible):
     return list(filter(lambda vehiculo: vehiculo["combustible"] == combustible,
                        obtener_disponibles(vehiculos)))
+
+# Pide uno de los combustibles admitidos y muestra las coincidencias.
+def consultar_por_combustible(vehiculos):
+    combustible = elegir_opcion("Tipo de combustible:", {
+        "1": "Nafta", "2": "Diésel", "3": "Híbrido", "4": "Eléctrico"
+    })
+    mostrar_resultados(filtrar_por_combustible(vehiculos, combustible))
+
+
+# Ordena una copia por precio de una moneda o por kilometraje (F-18).
+def ordenar_vehiculos(vehiculos, campo, descendente, moneda=None):
+    resultado = vehiculos.copy()
+    if campo == "precio":
+        resultado = [vehiculo for vehiculo in resultado if vehiculo["moneda"] == moneda]
+    # key indica el dato a comparar; reverse=True ordena de mayor a menor.
+    resultado.sort(key=lambda vehiculo: vehiculo[campo], reverse=descendente)
+    return resultado
+
+
+# Elige criterio y sentido del orden; consulta todos los vehículos registrados.
+def consultar_ordenados(vehiculos):
+    campo = elegir_opcion("Ordenar todos los registrados por:", {
+        "1": "precio", "2": "kilometraje"
+    })
+    sentido = elegir_opcion("Sentido del orden:", {"1": "Ascendente", "2": "Descendente"})
+    moneda = None
+    if campo == "precio":
+        moneda = seleccionar_moneda()
+    mostrar_resultados(ordenar_vehiculos(vehiculos, campo, sentido == "Descendente", moneda))
+
+
+# Cuenta los vehículos que siguen registrados, disponibles y vendidos (F-19).
+def calcular_resumen(vehiculos):
+    vendidos = 0
+    for vehiculo in vehiculos:
+        if vehiculo["vendido"]:
+            vendidos += 1
+    return {"total": len(vehiculos), "disponibles": len(vehiculos) - vendidos,
+            "vendidos": vendidos}
+
+
+# Muestra el resumen actual; los vehículos eliminados ya no integran el stock.
+def mostrar_resumen(vehiculos):
+    resumen = calcular_resumen(vehiculos)
+    print("\n===== RESUMEN DEL STOCK ACTUAL =====")
+    print("Total registrado:", resumen["total"])
+    print("Disponibles:", resumen["disponibles"])
+    print("Vendidos que siguen registrados:", resumen["vendidos"])
+
+
+# Encuentra menor y mayor precio disponible de una moneda; admite lista vacía (F-20).
+def obtener_extremos(vehiculos, moneda):
+    candidatos = [vehiculo for vehiculo in obtener_disponibles(vehiculos)
+                  if vehiculo["moneda"] == moneda]
+    if len(candidatos) == 0:
+        return None, None
+    menor = candidatos[0]
+    mayor = candidatos[0]
+    for vehiculo in candidatos:
+        if vehiculo["precio"] < menor["precio"]:
+            menor = vehiculo
+        if vehiculo["precio"] > mayor["precio"]:
+            mayor = vehiculo
+    return menor, mayor
+
+
+# Muestra los extremos; en un empate se muestra el primero registrado.
+def mostrar_extremos(vehiculos):
+    moneda = seleccionar_moneda()
+    menor, mayor = obtener_extremos(vehiculos, moneda)
+    if menor is None:
+        print("No hay vehículos disponibles en esa moneda.")
+    else:
+        print("Menor precio disponible (primer resultado en caso de empate):")
+        mostrar_detalle(menor)
+        print("Mayor precio disponible (primer resultado en caso de empate):")
+        mostrar_detalle(mayor)
+
+
+# Muestra las ventas confirmadas en orden de registro, incluso de eliminados (F-23).
+def mostrar_historial(historial):
+    print("\n===== HISTORIAL DE VENTAS DE ESTA SESIÓN =====")
+    if len(historial) == 0:
+        print("No hay ventas registradas.")
+    else:
+        for registro in historial:
+            mostrar_detalle(registro)
+
+
+# Busca una unidad por ID y presenta todos sus datos actuales (F-24).
+def consultar_detalle(vehiculos):
+    vehiculo = solicitar_vehiculo(vehiculos)
+    if vehiculo is not None:
+        mostrar_detalle(vehiculo)
