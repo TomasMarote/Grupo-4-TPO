@@ -137,3 +137,57 @@ def test_filtrar_por_combustible():
     
     # 5. Verificamos que haya 1 vehículo disponible híbrido (Corolla)
     assert len(hibrido) == 1
+
+def test_ordenar_vehiculos():
+    # Prueba la ordenación de listas de vehículos según un criterio especificado
+    
+    # 1. Cargamos los vehículos
+    vehiculos = crear_vehiculos_prueba()
+    
+    # 2. Ordenamos la lista por kilometraje de menor a mayor (ascendente)
+    ord_km = ordenar_vehiculos(vehiculos, "kilometraje", False)
+    
+    # 3. Verificamos que el primer elemento sea el Corolla (20.000 km, ID 1)
+    assert ord_km["id"] == 1
+    
+    # 4. Verificamos que el último elemento sea el Focus (90.000 km, ID 0)
+    assert ord_km[-1]["id"] == 0
+
+    # 5. Ordenamos por precio en USD de mayor a menor (descendente)
+    ord_precio = ordenar_vehiculos(vehiculos, "precio", True, "USD")
+    
+    # 6. Verificamos que el primero sea el de $20.000 USD
+    assert ord_precio["precio"] == 20000.0
+
+def test_calcular_resumen():
+    # Prueba el cálculo del diccionario de totales y estadísticas
+    
+    # 1. Cargamos los vehículos
+    vehiculos = crear_vehiculos_prueba()
+    
+    # 2. Generamos el resumen estadístico
+    resumen = calcular_resumen(vehiculos)
+    
+    # 3. Verificamos que el total de vehículos registrados sea 4
+    assert resumen["total"] == 4
+    
+    # 4. Verificamos que los disponibles sean 3
+    assert resumen["disponibles"] == 3
+    
+    # 5. Verificamos que los vendidos sean 1
+    assert resumen["vendidos"] == 1
+
+def test_obtener_extremos():
+    # Prueba la obtención del vehículo más barato y más caro para una moneda dada
+    
+    # 1. Cargamos los vehículos
+    vehiculos = crear_vehiculos_prueba()
+    
+    # 2. Obtenemos la tupla con el mínimo y el máximo en USD
+    min_v, max_v = obtener_extremos(vehiculos, "USD")
+    
+    # 3. Verificamos que el precio del más barato en USD sea 10.000.0
+    assert min_v["precio"] == 10000.0
+    
+    # 4. Verificamos que el precio del más caro en USD sea 20.000.0
+    assert max_v["precio"] == 20000.0
