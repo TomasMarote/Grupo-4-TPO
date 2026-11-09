@@ -83,3 +83,24 @@ def test_obtener_disponibles():
     
     # 5. Verificamos que al pasar una lista vacía devuelva una lista vacía
     assert obtener_disponibles([]) == []
+
+def test_filtrar_por_precio():
+    # Prueba el filtrado de vehículos por rango de precios y moneda
+    
+    # 1. Cargamos los vehículos de prueba
+    vehiculos = crear_vehiculos_prueba()
+    
+    # 2. Filtramos en dólares (USD) entre $5.000 y $20.000
+    res_usd = filtrar_por_precio(vehiculos, "USD", 5000, 20000)
+    
+    # 3. Comprobamos que trae 2 vehículos (Focus y Corolla; excluye el Fiesta por estar vendido)
+    assert len(res_usd) == 2
+    
+    # 4. Filtramos en pesos (ARS) entre $1.000.000 y $10.000.000
+    res_ars = filtrar_por_precio(vehiculos, "ARS", 1000000, 10000000)
+    
+    # 5. Comprobamos que trae exactamente 1 vehículo
+    assert len(res_ars) == 1
+    
+    # 6. Confirmamos que la marca del vehículo encontrado sea "Fiat"
+    assert res_ars["marca"] == "Fiat"
