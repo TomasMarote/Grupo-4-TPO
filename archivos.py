@@ -86,8 +86,13 @@ def cargar_registros(ruta):
         return [], True, False
     return registros, True, True
 
+<<<<<<< HEAD
+
+
+=======
 # Lee el historial de ventas desde un archivo JSON.
 # Devuelve el historial, si el archivo existe y si pudo leerse correctamente.
+>>>>>>> f52d018e8c8d192ff6845bfbefc5649841ad66a3
 def cargar_historial(ruta):
     try:
         # Abrimos el archivo para lectura.
@@ -134,6 +139,10 @@ def cargar_historial(ruta):
     # El archivo existe y el historial se recuperó correctamente.
     return historial, True, True
 
+<<<<<<< HEAD
+
+=======
+>>>>>>> f52d018e8c8d192ff6845bfbefc5649841ad66a3
 # Lee el próximo ID: el archivo debe contener una única línea con un entero.
 def cargar_siguiente_id(ruta):
     cantidad = 0
@@ -155,3 +164,4 @@ def cargar_siguiente_id(ruta):
         print(f"No se pudo leer {ruta}: {error}")
         return 0, True, False
     return siguiente_id, True, True
+
