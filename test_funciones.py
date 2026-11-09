@@ -191,3 +191,15 @@ def test_obtener_extremos():
     
     # 4. Verificamos que el precio del más caro en USD sea 20.000.0
     assert max_v["precio"] == 20000.0
+
+def test_calcular_precio_final():
+    # Prueba la función de cálculo de descuento sobre un valor numérico
+    
+    # 1. Verificamos que con 0% de descuento el precio se mantenga en 10.000.0
+    assert calcular_precio_final(10000, 0) == 10000.0
+    
+    # 2. Verificamos que con 10% de descuento sobre 10.000 devuelva 9.000.0
+    assert calcular_precio_final(10000, 10) == 9000.0
+    
+    # 3. Verificamos que con 100% de descuento devuelva 0.0
+    assert calcular_precio_final(10000, 100) == 0.0
