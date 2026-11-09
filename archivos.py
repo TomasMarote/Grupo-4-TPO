@@ -265,3 +265,6 @@ def guardar_datos(carpeta, vehiculos, historial, siguiente_id, crear_respaldo=Tr
 
     # Los tres archivos se guardaron correctamente.
     return True
+
+## Clase 10: lectura y escritura de archivos de texto y CSV.
+# Clase 11: json.dump guarda el historial y json.load lo recupera.
