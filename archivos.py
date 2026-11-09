@@ -61,4 +61,27 @@ def convertir_a_vehiculo(registro):
         return None
     return vehiculo
 
+def cargar_registros(ruta):
+    registros = []
+    ids = []
+    # try intenta abrir el archivo y leer sus registros.
+    try:
+        with open(ruta, "r", encoding="utf-8") as archivo:
+            numero_linea = 0
+            for linea in archivo:
+                numero_linea += 1
+                vehiculo = convertir_a_vehiculo(linea)
+                if vehiculo is None or vehiculo["id"] in ids:
+                    print(f"Datos inválidos o ID repetido en {ruta}, línea {numero_linea}.")
+                    return [], True, False
+                registros.append(vehiculo)
+                ids.append(vehiculo["id"])
+    # except distingue un archivo inexistente de uno dañado o inaccesible.
+    except FileNotFoundError:
+        return [], False, True
+    # except informa errores de acceso o texto que no se puede leer como UTF-8.
+    except (OSError, UnicodeError) as error:
+        print(f"No se pudo leer {ruta}: {error}")
+        return [], True, False
+    return registros, True, True
 
