@@ -85,6 +85,8 @@ def cargar_registros(ruta):
         return [], True, False
     return registros, True, True
 
+
+
 def cargar_historial(ruta):
     try:
         # Abrimos el archivo para lectura.
@@ -130,3 +132,135 @@ def cargar_historial(ruta):
 
     # El archivo existe y el historial se recuperó correctamente.
     return historial, True, True
+
+
+# Lee el próximo ID: el archivo debe contener una única línea con un entero.
+def cargar_siguiente_id(ruta):
+    cantidad = 0
+    siguiente_id = 0
+    # try abre el archivo, recorre sus líneas y convierte el número.
+    try:
+        with open(ruta, "r", encoding="utf-8") as archivo:
+            for linea in archivo:
+                cantidad += 1
+                siguiente_id = int(linea.strip())
+        if cantidad != 1 or siguiente_id < 0:
+            print("El archivo del siguiente ID tiene un formato inválido.")
+            return 0, True, False
+    # except permite reconocer la primera ejecución, cuando aún no hay archivos.
+    except FileNotFoundError:
+        return 0, False, True
+    # except informa problemas de lectura, codificación o conversión a entero.
+    except (OSError, ValueError) as error:
+        print(f"No se pudo leer {ruta}: {error}")
+        return 0, True, False
+    return siguiente_id, True, True
+
+
+# Comprueba que las ventas y los IDs de los tres archivos sean coherentes.
+def datos_coherentes(vehiculos, historial, siguiente_id):
+    ventas_por_id = {}
+    for registro in historial:
+        if not registro["vendido"] or registro["id"] >= siguiente_id:
+            return False
+        ventas_por_id[registro["id"]] = registro["venta"]
+    for vehiculo in vehiculos:
+        if vehiculo["id"] >= siguiente_id:
+            return False
+        venta = ventas_por_id.get(vehiculo["id"])
+        if vehiculo["vendido"]:
+            if venta != vehiculo["venta"]:
+                return False
+        elif venta is not None:
+            return False
+    return True
+
+
+# Carga todo; solo inicia vacío si faltan los tres archivos, nunca si falta uno solo.
+def cargar_datos(carpeta):
+    vehiculos, existe_v, valido_v = cargar_registros(os.path.join(carpeta, "vehiculos.csv"))
+    # Recuperamos el historial mediante la función que lee JSON.
+    historial, existe_h, valido_h = cargar_historial(
+    os.path.join(carpeta, "ventas.json")
+)
+    siguiente_id, existe_i, valido_i = cargar_siguiente_id(os.path.join(carpeta, "siguiente_id.txt"))
+    if not (valido_v and valido_h and valido_i):
+        return [], [], 0, False
+    if not existe_v and not existe_h and not existe_i:
+        return [], [], 0, True
+    if not (existe_v and existe_h and existe_i):
+        print("Faltan archivos del guardado. No se iniciará con datos incompletos.")
+        return [], [], 0, False
+    if not datos_coherentes(vehiculos, historial, siguiente_id):
+        print("Los archivos no coinciden: revise las ventas y el siguiente ID.")
+        return [], [], 0, False
+    return vehiculos, historial, siguiente_id, True
+
+
+# Copia por líneas el guardado anterior a archivos .bak antes de reemplazarlo.
+def respaldar_datos(carpeta):
+    # try comprueba y copia los tres archivos; si falla, no comienza el guardado.
+    try:
+        for nombre in ["vehiculos.csv", "ventas.json", "siguiente_id.txt"]:
+            ruta = os.path.join(carpeta, nombre)
+            # try abre primero el original: si no existe, no crea un respaldo vacío.
+            try:
+                with open(ruta, "r", encoding="utf-8") as original:
+                    with open(ruta + ".bak", "w", encoding="utf-8") as respaldo:
+                        for linea in original:
+                            respaldo.write(linea)
+            # except omite el respaldo de un archivo que aún no se creó.
+            except FileNotFoundError:
+                pass
+    # except informa una falla al leer o escribir la copia de seguridad.
+    except (OSError, UnicodeError) as error:
+        print("No se pudo completar el respaldo previo:", error)
+        return False
+    return True
+
+# Guarda los vehículos en CSV, el historial en JSON y el próximo ID en TXT.
+def guardar_datos(carpeta, vehiculos, historial, siguiente_id, crear_respaldo=True):
+
+    # Si corresponde, respaldamos los archivos antes de escribir.
+    if crear_respaldo and not respaldar_datos(carpeta):
+        return False
+
+    try:
+        # Guardamos los vehículos como registros separados por punto y coma.
+        with open(
+            os.path.join(carpeta, "vehiculos.csv"),
+            "w",
+            encoding="utf-8"
+        ) as archivo:
+
+            # Escribimos una línea por cada vehículo.
+            for vehiculo in vehiculos:
+                archivo.write(convertir_a_registro(vehiculo))
+
+        # Abrimos el archivo JSON para guardar el historial completo.
+        with open(
+            os.path.join(carpeta, "ventas.json"),
+            "w",
+            encoding="utf-8"
+        ) as archivo:
+
+            # Convertimos la lista de ventas a JSON y la escribimos.
+            # indent=4 organiza el texto para facilitar su lectura.
+            json.dump(historial, archivo, indent=4)
+
+        # Guardamos el número que recibirá el próximo vehículo.
+        with open(
+            os.path.join(carpeta, "siguiente_id.txt"),
+            "w",
+            encoding="utf-8"
+        ) as archivo:
+            archivo.write(f"{siguiente_id}\n")
+
+    except (OSError, UnicodeError) as error:
+        # Avisamos si ocurrió un problema durante la escritura.
+        print("No se completó el guardado:", error)
+        print("Los archivos pueden haber quedado incompletos. No borre las copias .bak.")
+        return False
+
+    # Los tres archivos se guardaron correctamente.
+    return True
