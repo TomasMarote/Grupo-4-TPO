@@ -1,4 +1,4 @@
- # Entrega modificada del 40% 
+# Muestra las opciones de la entrega del 100%
 def mostrar_menu():
     print("\n===== GPS AUTOMOTORES =====")
     print("1. Registrar vehículo")
@@ -483,4 +483,3 @@ def consultar_detalle(vehiculos):
     vehiculo = solicitar_vehiculo(vehiculos)
     if vehiculo is not None:
         mostrar_detalle(vehiculo)
-        
