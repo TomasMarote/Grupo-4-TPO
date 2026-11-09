@@ -85,3 +85,48 @@ def cargar_registros(ruta):
         return [], True, False
     return registros, True, True
 
+def cargar_historial(ruta):
+    try:
+        # Abrimos el archivo para lectura.
+        with open(ruta, "r", encoding="utf-8") as archivo:
+
+            # Recuperamos la lista de ventas guardada en JSON.
+            historial = json.load(archivo)
+
+        # El historial del programa debe ser una lista.
+        if type(historial) != list:
+            print("El historial debe contener una lista.")
+            return [], True, False
+
+        # Guardamos los IDs encontrados para detectar ventas repetidas.
+        ids = []
+
+        # Revisamos cada venta recuperada.
+        for registro in historial:
+
+            # Reutilizamos las funciones que ya validan los datos del vehículo.
+            vehiculo = convertir_a_vehiculo(
+                convertir_a_registro(registro)
+            )
+
+            # Rechazamos datos inválidos, vehículos sin vender o IDs repetidos.
+            if (vehiculo is None
+                    or not vehiculo["vendido"]
+                    or vehiculo["id"] in ids):
+                print("El historial contiene una venta inválida o un ID repetido.")
+                return [], True, False
+
+            # Recordamos el ID para comprobar los siguientes registros.
+            ids.append(vehiculo["id"])
+
+    except FileNotFoundError:
+        # El archivo todavía no existe.
+        return [], False, True
+
+    except Exception as error:
+        # Informamos errores de lectura, de JSON o de los datos guardados.
+        print(f"No se pudo leer {ruta}: {error}")
+        return [], True, False
+
+    # El archivo existe y el historial se recuperó correctamente.
+    return historial, True, True
