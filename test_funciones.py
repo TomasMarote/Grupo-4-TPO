@@ -44,3 +44,24 @@ def crear_vehiculos_prueba():
         }
     ]
 
+# ==============================================================================
+# FUNCIONES DE PRUEBA (TESTS UNITARIOS)
+# ==============================================================================
+
+def test_buscar_por_id():
+    # Prueba la búsqueda de un vehículo por su ID único
+    
+    # 1. Cargamos la lista de vehículos de prueba
+    vehiculos = crear_vehiculos_prueba()
+    
+    # 2. Verificamos que al buscar el ID 0 devuelva exactamente el primer vehículo de la lista
+    assert buscar_por_id(vehiculos, 0) == vehiculos
+    
+    # 3. Verificamos que al buscar el ID 2 devuelva el tercer vehículo
+    assert buscar_por_id(vehiculos, 2) == vehiculos
+    
+    # 4. Verificamos que buscar un ID que no existe (ej. 99) devuelva None
+    assert buscar_por_id(vehiculos, 99) is None
+    
+    # 5. Verificamos que buscar en una lista vacía devuelva None sin romper el programa
+    assert buscar_por_id([], 0) is None
