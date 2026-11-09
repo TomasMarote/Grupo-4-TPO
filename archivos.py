@@ -155,4 +155,3 @@ def cargar_siguiente_id(ruta):
         print(f"No se pudo leer {ruta}: {error}")
         return 0, True, False
     return siguiente_id, True, True
-
