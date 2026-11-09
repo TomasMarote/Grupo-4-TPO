@@ -65,3 +65,21 @@ def test_buscar_por_id():
     
     # 5. Verificamos que buscar en una lista vacía devuelva None sin romper el programa
     assert buscar_por_id([], 0) is None
+
+def test_obtener_disponibles():
+    # Prueba que se filtren únicamente los vehículos cuya clave 'vendido' sea False
+    
+    # 1. Cargamos la lista de prueba
+    vehiculos = crear_vehiculos_prueba()
+    
+    # 2. Llamamos a la función para obtener los disponibles
+    disponibles = obtener_disponibles(vehiculos)
+    
+    # 3. Verificamos que haya exactamente 3 vehículos disponibles (de los 4 totales)
+    assert len(disponibles) == 3
+    
+    # 4. Verificamos que el vehículo vendido (el de posición) NO esté dentro de la lista resultante
+    assert vehiculos not in disponibles
+    
+    # 5. Verificamos que al pasar una lista vacía devuelva una lista vacía
+    assert obtener_disponibles([]) == []
