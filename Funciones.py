@@ -1,5 +1,4 @@
-# Entrega modificada del 40% 
-
+ # Entrega modificada del 40% 
 def mostrar_menu():
     print("\n===== GPS AUTOMOTORES =====")
     print("1. Registrar vehículo")
@@ -22,55 +21,59 @@ def mostrar_menu():
 # Funciones Atomicas / Auxiliares
 #Cada vez que se usa algo de eso, se llama a las funciones atomicas 
 
-def leer_texto(mensaje):
-    valido = False 
-    while not valido: 
-        texto = input(mensaje).strip() 
-        if texto != "": 
-            valido = True 
-        else:
-            print("El dato no puede estar vacio")
-    return texto 
-
-#Pide un entero con un minimo y opcionalmente un maximo permitido 
-def leer_entero(mensaje, minimo, maximo=None):
-    valido = True 
+# Pide texto sin separadores de CSV; permite vacío solo para datos opcionales.
+def leer_texto(mensaje, opcional=False):
+    valido = False
     while not valido:
-        # try, intenta convertir la entrada a un entero y comprobar su rango
-        # lugar seguro / hermetico para probar una cosa 
-        try :
+        texto = input(mensaje).strip()
+        if ";" in texto or "\n" in texto or "\r" in texto:
+            print("No se permiten ; ni saltos de línea dentro de un dato.")
+        elif texto != "" or opcional:
+            valido = True
+        else:
+            print("El dato no puede estar vacío.")
+    return texto
+
+# Pide un entero con un mínimo y, opcionalmente, un máximo permitido.
+def leer_entero(mensaje, minimo, maximo=None):
+    valido = False
+    while not valido:
+        # try intenta convertir la entrada a entero y comprobar su rango.
+        try:
             numero = int(input(mensaje))
-            if numero < minimo: 
-                print(f"El numero debe ser mayor o igual a {minimo}.")
-            elif maximo is not None and numero > maximo: 
-                print(f"El numero debe ser menor o igual a {maximo}.")
+            if numero < minimo:
+                print(f"El número debe ser mayor o igual a {minimo}.")
+            elif maximo is not None and numero > maximo:
+                print(f"El número debe ser menor o igual a {maximo}.")
             else:
-                valido = True 
-            # except captura ValueError cuando el texto no representa un entero.
+                valido = True
+        # except captura ValueError cuando el texto no representa un entero.
         # La bandera sigue en False y se vuelve a pedir el dato.
         except ValueError:
             print("Debe ingresar un número entero.")
     return numero
 
+
 # Pide un precio positivo y finito; los decimales se ingresan con punto.
 def leer_precio(mensaje):
-    valido + False 
+    valido = False
     while not valido:
-        #try intenta convertir el texto a un numero decimal con float 
+        # try intenta convertir el texto a un número decimal con float.
         try:
             precio = float(input(mensaje))
-            # se excluyen infinito (inf) y valores no numericos (nan)
+            # Se excluyen infinito (inf) y valores no numéricos (nan).
             if 0 < precio < float("inf"):
-                valido = True 
+                valido = True
             else:
-                print ("El precio debe ser un numero positivo y finito")
+                print("El precio debe ser un número positivo y finito.")
         # except captura ValueError cuando el texto no puede convertirse a float.
         # Se informa el error y se repite el pedido sin finalizar el programa.
         except ValueError:
             print("Debe ingresar un número. Use punto para los decimales.")
     return precio
 
-#Muestra un diccionario de opciones y devulee el valor elegido
+
+# Muestra un diccionario de opciones y devuelve el valor elegido.
 def elegir_opcion(titulo, opciones):
     print(f"\n{titulo}")
     for clave, valor in opciones.items():
@@ -83,6 +86,7 @@ def elegir_opcion(titulo, opciones):
         else:
             print("Opción inválida.")
     return opciones[opcion]
+
 
 # Muestra los datos de un vehículo y, si está vendido, los datos de la venta.
 def mostrar_detalle(vehiculo):
@@ -99,14 +103,19 @@ def mostrar_detalle(vehiculo):
         venta = vehiculo["venta"]
         print("Estado: VENDIDO")
         print(f"Cliente: {venta['cliente']}")
+        print(f"DNI: {venta.get('dni', '') or 'No informado'}")
+        print(f"Teléfono: {venta.get('telefono', '') or 'No informado'}")
+        print(f"Descuento: {venta.get('descuento', 0):.2f}%")
+        print(f"Precio antes del descuento: {venta['moneda']} "
+              f"{venta.get('precio_base', venta['precio_venta']):.2f}")
         print(f"Precio de venta: {venta['moneda']} {venta['precio_venta']:.2f}")
     else:
         print("Estado: DISPONIBLE")
     print("----------------------------------------")
 
-# 
+
 # Solicita los datos, crea el diccionario del vehículo y lo agrega a la lista.
-def registrar_vehiculo(vehiculos):
+def registrar_vehiculo(vehiculos, siguiente_id):
     print("\n===== REGISTRAR VEHÍCULO =====")
     marca = leer_texto("Ingrese la marca: ")
     modelo = leer_texto("Ingrese el modelo: ")
@@ -119,9 +128,9 @@ def registrar_vehiculo(vehiculos):
     moneda = elegir_opcion("Moneda del precio:", {"1": "ARS", "2": "USD"})
     precio = leer_precio(f"Ingrese el precio en {moneda}: ")
 
-    # Conservamos IDs desde 0. len sirve aquí porque no se eliminan vehículos.
+    # El contador no disminuye al eliminar; evita repetir IDs durante la sesión.
     vehiculo = {
-        "id": len(vehiculos),
+        "id": siguiente_id,
         "marca": marca,
         "modelo": modelo,
         "año": año,
@@ -135,8 +144,10 @@ def registrar_vehiculo(vehiculos):
     vehiculos.append(vehiculo)
     print("\nVEHÍCULO REGISTRADO CORRECTAMENTE")
     mostrar_detalle(vehiculo)
+    return siguiente_id + 1
 
-    
+
+# Muestra los vehículos del estado solicitado y devuelve si encontró alguno.
 def mostrar_por_estado(vehiculos, vendido):
     encontrado = False
     for vehiculo in vehiculos:
@@ -144,7 +155,8 @@ def mostrar_por_estado(vehiculos, vendido):
             mostrar_detalle(vehiculo)
             encontrado = True
     return encontrado
-    
+
+
 # Muestra los disponibles y devuelve una bandera que indica si hay alguno.
 def mostrar_vehiculos(vehiculos):
     print("\n===== VEHÍCULOS DISPONIBLES =====")
@@ -152,6 +164,7 @@ def mostrar_vehiculos(vehiculos):
     if not disponibles:
         print("No hay vehículos disponibles.")
     return disponibles
+
 
 # Busca por ID exacto o por parte de la marca o modelo, sin distinguir mayúsculas.
 def buscar_vehiculo(vehiculos):
@@ -169,7 +182,9 @@ def buscar_vehiculo(vehiculos):
             encontrado = True
     if not encontrado:
         print("No se encontró ningún vehículo.")
-        
+
+
+# Devuelve el vehículo con el ID solicitado, o None si no existe.
 def buscar_por_id(vehiculos, id_vehiculo):
     resultado = None
     encontrado = False
@@ -181,6 +196,7 @@ def buscar_por_id(vehiculos, id_vehiculo):
         else:
             posicion += 1
     return resultado
+
 
 # Pide datos opcionales, calcula el descuento y guarda la venta si se confirma.
 def registrar_venta(vehiculos, historial):
@@ -200,8 +216,8 @@ def registrar_venta(vehiculos, historial):
         print("Este vehículo ya fue vendido.")
     else:
         cliente = leer_texto("Ingrese el nombre del cliente: ")
-        dni = input("DNI del cliente (Enter para omitir): ").strip()
-        telefono = input("Teléfono del cliente (Enter para omitir): ").strip()
+        dni = leer_texto("DNI del cliente (Enter para omitir): ", True)
+        telefono = leer_texto("Teléfono del cliente (Enter para omitir): ", True)
         precio_base = leer_precio(f"Ingrese el precio de venta en {vehiculo['moneda']}: ")
         descuento = leer_descuento()
         precio_venta = calcular_precio_final(precio_base, descuento)
@@ -226,13 +242,15 @@ def registrar_venta(vehiculos, historial):
         historial.append(registro)
         print("\nVENTA REGISTRADA")
         mostrar_detalle(vehiculo)
-        mostrar_detalle(vehiculo)
-    
+
+
+# Muestra los vehículos vendidos, incluyendo cliente y precio de venta.
 def mostrar_vendidos(vehiculos):
     print("\n===== VEHÍCULOS VENDIDOS =====")
     vendidos = mostrar_por_estado(vehiculos, True)
     if not vendidos:
         print("No hay vehículos vendidos.")
+
 
 # Devuelve True para confirmar y False para cancelar; valida la respuesta.
 def confirmar(mensaje):
@@ -261,14 +279,17 @@ def leer_descuento():
                 print("Debe ingresar un número. Use punto para los decimales.")
     return descuento
 
-# calcular precio con descuento y redondear a dos decimales 
-def calcular_precio_final(precio, descuento): 
+
+# Calcula el precio con descuento y lo redondea a dos decimales.
+def calcular_precio_final(precio, descuento):
     return round(precio * (1 - descuento / 100), 2)
 
-# pide la moneda para no comparar importes de pesos con importe de dolares 
-def seleccionar_moneda(): 
-    return elegir_opcion("Seleccione la moenda:", {"1": "ARS", "2": "USD"})
 
+# Pide la moneda para no comparar importes de pesos con importes de dólares.
+def seleccionar_moneda():
+    return elegir_opcion("Seleccione la moneda:", {"1": "ARS", "2": "USD"})
+
+# ---------------------hasta arriba esta en el tpo falta lo de abajo -------------------
 # Solicita un ID y devuelve su vehículo, o None si no puede encontrarlo.
 def solicitar_vehiculo(vehiculos):
     if len(vehiculos) == 0:
@@ -279,6 +300,7 @@ def solicitar_vehiculo(vehiculos):
     if vehiculo is None:
         print("No existe un vehículo con ese ID.")
     return vehiculo
+
 
 # Permite actualizar únicamente precio, color, kilometraje o año (F-13).
 def modificar_vehiculo(vehiculos):
@@ -301,7 +323,8 @@ def modificar_vehiculo(vehiculos):
     print("Vehículo modificado. Los datos de una venta previa no cambian.")
     mostrar_detalle(vehiculo)
 
-    # Elimina solo el vehículo seleccionado si el usuario confirma (F-14).
+
+# Elimina solo el vehículo seleccionado si el usuario confirma (F-14).
 def eliminar_vehiculo(vehiculos):
     vehiculo = solicitar_vehiculo(vehiculos)
     if vehiculo is None:
@@ -312,6 +335,7 @@ def eliminar_vehiculo(vehiculos):
         print("Vehículo eliminado.")
     else:
         print("Eliminación cancelada.")
+
 
 # Devuelve una lista de disponibles sin modificar la lista original.
 def obtener_disponibles(vehiculos):
@@ -325,6 +349,7 @@ def mostrar_resultados(resultados):
     else:
         for vehiculo in resultados:
             mostrar_detalle(vehiculo)
+
 
 # Filtra disponibles por moneda y rango inclusivo usando filter y lambda (F-15).
 def filtrar_por_precio(vehiculos, moneda, minimo, maximo):
@@ -346,20 +371,24 @@ def consultar_por_precio(vehiculos):
             print("El máximo no puede ser menor que el mínimo.")
     mostrar_resultados(filtrar_por_precio(vehiculos, moneda, minimo, maximo))
 
+
 # Filtra disponibles cuyo año sea igual o superior al mínimo (F-16).
 def filtrar_por_año(vehiculos, año_minimo):
     return list(filter(lambda vehiculo: vehiculo["año"] >= año_minimo,
                        obtener_disponibles(vehiculos)))
+
 
 # Pide el año mínimo y muestra los vehículos disponibles que lo cumplen.
 def consultar_por_año(vehiculos):
     año_minimo = leer_entero("Año mínimo (2010 - 2026): ", 2010, 2026)
     mostrar_resultados(filtrar_por_año(vehiculos, año_minimo))
 
+
 # Filtra disponibles por el combustible elegido (F-17).
 def filtrar_por_combustible(vehiculos, combustible):
     return list(filter(lambda vehiculo: vehiculo["combustible"] == combustible,
                        obtener_disponibles(vehiculos)))
+
 
 # Pide uno de los combustibles admitidos y muestra las coincidencias.
 def consultar_por_combustible(vehiculos):
@@ -441,7 +470,7 @@ def mostrar_extremos(vehiculos):
 
 # Muestra las ventas confirmadas en orden de registro, incluso de eliminados (F-23).
 def mostrar_historial(historial):
-    print("\n===== HISTORIAL DE VENTAS DE ESTA SESIÓN =====")
+    print("\n===== HISTORIAL DE VENTAS =====")
     if len(historial) == 0:
         print("No hay ventas registradas.")
     else:
@@ -454,3 +483,4 @@ def consultar_detalle(vehiculos):
     vehiculo = solicitar_vehiculo(vehiculos)
     if vehiculo is not None:
         mostrar_detalle(vehiculo)
+        
