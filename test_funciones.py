@@ -104,3 +104,36 @@ def test_filtrar_por_precio():
     
     # 6. Confirmamos que la marca del vehículo encontrado sea "Fiat"
     assert res_ars["marca"] == "Fiat"
+
+def test_filtrar_por_año():
+    # Prueba el filtrado de vehículos a partir de un año mínimo de fabricación
+    
+    # 1. Cargamos los vehículos de prueba
+    vehiculos = crear_vehiculos_prueba()
+    
+    # 2. Filtramos vehículos del año 2020 en adelante
+    res = filtrar_por_año(vehiculos, 2020)
+    
+    # 3. Verificamos que encuentre 2 vehículos (Corolla 2020 y Cronos 2022)
+    assert len(res) == 2
+    
+    # 4. Verificamos que buscar un año futuro sin resultados (ej. 2025) devuelva una lista vacía
+    assert filtrar_por_año(vehiculos, 2025) == []
+
+def test_filtrar_por_combustible():
+    # Prueba el filtrado por tipo de combustible
+    
+    # 1. Cargamos los vehículos de prueba
+    vehiculos = crear_vehiculos_prueba()
+    
+    # 2. Filtramos vehículos que usen "Nafta"
+    nafta = filtrar_por_combustible(vehiculos, "Nafta")
+    
+    # 3. Verificamos que haya 2 vehículos disponibles a nafta (Focus y Cronos)
+    assert len(nafta) == 2
+    
+    # 4. Filtramos vehículos que usen "Híbrido"
+    hibrido = filtrar_por_combustible(vehiculos, "Híbrido")
+    
+    # 5. Verificamos que haya 1 vehículo disponible híbrido (Corolla)
+    assert len(hibrido) == 1
