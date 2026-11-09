@@ -61,6 +61,7 @@ def convertir_a_vehiculo(registro):
         return None
     return vehiculo
 
+# Lee un CSV por líneas; devuelve registros, si existe y si pudo leerse bien.
 def cargar_registros(ruta):
     registros = []
     ids = []
@@ -85,6 +86,8 @@ def cargar_registros(ruta):
         return [], True, False
     return registros, True, True
 
+# Lee el historial de ventas desde un archivo JSON.
+# Devuelve el historial, si el archivo existe y si pudo leerse correctamente.
 def cargar_historial(ruta):
     try:
         # Abrimos el archivo para lectura.
@@ -130,3 +133,26 @@ def cargar_historial(ruta):
 
     # El archivo existe y el historial se recuperó correctamente.
     return historial, True, True
+
+# Lee el próximo ID: el archivo debe contener una única línea con un entero.
+def cargar_siguiente_id(ruta):
+    cantidad = 0
+    siguiente_id = 0
+    # try abre el archivo, recorre sus líneas y convierte el número.
+    try:
+        with open(ruta, "r", encoding="utf-8") as archivo:
+            for linea in archivo:
+                cantidad += 1
+                siguiente_id = int(linea.strip())
+        if cantidad != 1 or siguiente_id < 0:
+            print("El archivo del siguiente ID tiene un formato inválido.")
+            return 0, True, False
+    # except permite reconocer la primera ejecución, cuando aún no hay archivos.
+    except FileNotFoundError:
+        return 0, False, True
+    # except informa problemas de lectura, codificación o conversión a entero.
+    except (OSError, ValueError) as error:
+        print(f"No se pudo leer {ruta}: {error}")
+        return 0, True, False
+    return siguiente_id, True, True
+
