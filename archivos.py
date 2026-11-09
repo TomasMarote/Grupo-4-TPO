@@ -61,6 +61,7 @@ def convertir_a_vehiculo(registro):
         return None
     return vehiculo
 
+# Lee un CSV por líneas; devuelve registros, si existe y si pudo leerse bien.
 def cargar_registros(ruta):
     registros = []
     ids = []
@@ -85,8 +86,13 @@ def cargar_registros(ruta):
         return [], True, False
     return registros, True, True
 
+<<<<<<< HEAD
 
 
+=======
+# Lee el historial de ventas desde un archivo JSON.
+# Devuelve el historial, si el archivo existe y si pudo leerse correctamente.
+>>>>>>> f52d018e8c8d192ff6845bfbefc5649841ad66a3
 def cargar_historial(ruta):
     try:
         # Abrimos el archivo para lectura.
@@ -133,7 +139,10 @@ def cargar_historial(ruta):
     # El archivo existe y el historial se recuperó correctamente.
     return historial, True, True
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> f52d018e8c8d192ff6845bfbefc5649841ad66a3
 # Lee el próximo ID: el archivo debe contener una única línea con un entero.
 def cargar_siguiente_id(ruta):
     cantidad = 0
@@ -156,6 +165,7 @@ def cargar_siguiente_id(ruta):
         return 0, True, False
     return siguiente_id, True, True
 
+<<<<<<< HEAD
 
 # Comprueba que las ventas y los IDs de los tres archivos sean coherentes.
 def datos_coherentes(vehiculos, historial, siguiente_id):
@@ -264,3 +274,5 @@ def guardar_datos(carpeta, vehiculos, historial, siguiente_id, crear_respaldo=Tr
 
     # Los tres archivos se guardaron correctamente.
     return True
+=======
+>>>>>>> f52d018e8c8d192ff6845bfbefc5649841ad66a3
