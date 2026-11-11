@@ -62,3 +62,125 @@ def test_primera_ejecucion():
 
     finally:
         borrar_carpeta_prueba(carpeta)
+
+def test_guardar_y_recuperar():
+    """Comprueba que los datos puedan guardarse y recuperarse correctamente."""
+    carpeta = preparar_carpeta_prueba()
+
+    try:
+        v_orig, h_orig, sig_orig = crear_estado()
+
+        guardado_ok = a.guardar_datos(carpeta, v_orig, h_orig, sig_orig, crear_respaldo=False)
+
+        assert guardado_ok is True
+
+        vehiculos, historial, siguiente_id, exito = a.cargar_datos(carpeta)
+
+        assert exito is True
+        assert len(vehiculos) == 2
+        assert len(historial) == 1
+        assert siguiente_id == 2
+
+        assert isinstance(vehiculos["id"], int)
+        assert isinstance(vehiculos["precio"], float)
+        assert vehiculos["vendido"] is False
+
+        assert vehiculos["venta"]["dni"] == "00123"
+        assert vehiculos["venta"]["telefono"] == ""
+
+        assert vehiculos["venta"] is not historial["venta"]
+
+    finally:
+        borrar_carpeta_prueba(carpeta)
+
+
+def test_vacios_con_contador_conservado():
+    """Comprueba que se puedan guardar listas vacías conservando el siguiente ID."""
+    carpeta = preparar_carpeta_prueba()
+
+    try:
+        assert a.guardar_datos(carpeta, [], [], 8, crear_respaldo=False) is True
+
+        assert a.cargar_datos(carpeta) == ([], [], 8, True)
+
+    finally:
+        borrar_carpeta_prueba(carpeta)
+
+
+def test_descuento_total():
+    """Comprueba que se puedan guardar y recuperar ventas con descuento del 100%."""
+    carpeta = preparar_carpeta_prueba()
+
+    try:
+        vehiculos, historial, siguiente = crear_estado()
+
+        for registro in [vehiculos, historial]:
+            registro["venta"]["descuento"] = 100
+            registro["venta"]["precio_venta"] = 0
+
+        assert a.guardar_datos(carpeta, vehiculos, historial, siguiente, crear_respaldo=False) is True
+
+        assert a.cargar_datos(carpeta) == (vehiculos, historial, siguiente, True)
+
+    finally:
+        borrar_carpeta_prueba(carpeta)
+
+def test_modificacion_y_historial():
+    """Comprueba que modificar los datos de un vehículo no altere el historial de ventas."""
+    carpeta = preparar_carpeta_prueba()
+
+    try:
+        vehiculos, historial, siguiente = crear_estado()
+
+        vehiculos["precio"] = 25000.0
+        vehiculos["color"] = "Gris"
+
+        assert a.guardar_datos(carpeta, vehiculos, historial, siguiente, crear_respaldo=False) is True
+
+        leidos, ventas, _, correcto = a.cargar_datos(carpeta)
+
+        assert correcto is True
+        assert leidos["precio"] == 25000.0
+        assert ventas["precio"] == 20000.0
+        assert ventas["color"] == "Blanco"
+
+    finally:
+        borrar_carpeta_prueba(carpeta)
+
+
+def test_eliminacion_con_historial():
+    """Comprueba que el historial se conserve aunque se eliminen todos los vehículos."""
+    carpeta = preparar_carpeta_prueba()
+
+    try:
+        _, historial, siguiente = crear_estado()
+
+        assert a.guardar_datos(carpeta, [], historial, siguiente, crear_respaldo=False) is True
+
+        assert a.cargar_datos(carpeta) == ([], historial, siguiente, True)
+
+    finally:
+        borrar_carpeta_prueba(carpeta)
+
+
+def test_respaldo_anterior():
+    """Comprueba que se generen copias de seguridad al modificar los archivos."""
+    carpeta = preparar_carpeta_prueba()
+
+    try:
+        vehiculos, historial, siguiente = crear_estado()
+
+        a.guardar_datos(carpeta, vehiculos, historial, siguiente, crear_respaldo=False)
+
+        vehiculos["color"] = "Verde"
+
+        guardado_ok = a.guardar_datos(carpeta, vehiculos, historial, siguiente, crear_respaldo=True)
+
+        assert guardado_ok is True
+
+        assert os.path.exists(os.path.join(carpeta, "vehiculos.csv.bak"))
+        assert os.path.exists(os.path.join(carpeta, "ventas.csv.bak"))
+        assert os.path.exists(os.path.join(carpeta, "siguiente_id.txt.bak"))
+
+    finally:
+        borrar_carpeta_prueba(carpeta)
