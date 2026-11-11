@@ -20,32 +20,45 @@ from Funciones import (
     confirmar,
 )
 
-
-# Guarda y permite reintentar; no continúa operando mientras haya cambios pendientes.
+# Intenta guardar y permite reintentar si ocurre un error.
 def guardar_con_reintento(carpeta, vehiculos, historial, siguiente_id):
+    # Realizamos el primer intento de guardado.
     guardado = guardar_datos(carpeta, vehiculos, historial, siguiente_id)
     reintentar = True
+
+    # Repetimos mientras falle el guardado y el usuario quiera reintentar.
     while not guardado and reintentar:
-        print("Los cambios siguen en memoria, pero NO se confirmó su guardado.")
-        reintentar = confirmar("¿Reintentar guardar? No = cerrar con cambios sin guardar.")
+        print("Los cambios siguen en memoria, pero no se guardaron.")
+
+        reintentar = confirmar(
+            "¿Reintentar guardar? No = cerrar con cambios sin guardar."
+        )
+
         if reintentar:
-            # No reemplazar el respaldo bueno por los archivos de un intento fallido.
-            guardado = guardar_datos(carpeta, vehiculos, historial, siguiente_id, False)
+            # Volvemos a guardar los datos que siguen en memoria.
+            guardado = guardar_datos(
+                carpeta, vehiculos, historial, siguiente_id
+            )
+
+    # Informamos el resultado final.
     if guardado:
         print("Datos guardados correctamente.")
     else:
-        print("Programa cerrado con cambios SIN GUARDAR. Revise los archivos y sus .bak.")
-    return guardado
+        print("Programa cerrado con cambios SIN GUARDAR.")
 
+    return guardado
 
 # Carga los archivos, ejecuta el menú y guarda después de cada operación de cambio.
 def main(carpeta=None):
     if carpeta is None:
         carpeta = os.path.dirname(__file__)
+
     vehiculos, historial, siguiente_id, carga_correcta = cargar_datos(carpeta)
+
     if not carga_correcta:
-        print("No se modificó ningún archivo. Corrija el problema o recupere el conjunto .bak.")
+        print("No se pudieron cargar los datos. Revise el error indicado.")
         return
+
     continuar = True
     print("Los datos se cargan y guardan en la carpeta del programa.")
 

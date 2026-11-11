@@ -197,74 +197,51 @@ def cargar_datos(carpeta):
         return [], [], 0, False
     return vehiculos, historial, siguiente_id, True
 
-
-# Copia por líneas el guardado anterior a archivos .bak antes de reemplazarlo.
-def respaldar_datos(carpeta):
-    # try comprueba y copia los tres archivos; si falla, no comienza el guardado.
-    try:
-        for nombre in ["vehiculos.csv", "ventas.json", "siguiente_id.txt"]:
-            ruta = os.path.join(carpeta, nombre)
-            # try abre primero el original: si no existe, no crea un respaldo vacío.
-            try:
-                with open(ruta, "r", encoding="utf-8") as original:
-                    with open(ruta + ".bak", "w", encoding="utf-8") as respaldo:
-                        for linea in original:
-                            respaldo.write(linea)
-            # except omite el respaldo de un archivo que aún no se creó.
-            except FileNotFoundError:
-                pass
-    # except informa una falla al leer o escribir la copia de seguridad.
-    except (OSError, UnicodeError) as error:
-        print("No se pudo completar el respaldo previo:", error)
-        return False
-    return True
-
 # Guarda los vehículos en CSV, el historial en JSON y el próximo ID en TXT.
-def guardar_datos(carpeta, vehiculos, historial, siguiente_id, crear_respaldo=True):
-
-    # Si corresponde, respaldamos los archivos antes de escribir.
-    if crear_respaldo and not respaldar_datos(carpeta):
-        return False
-
+def guardar_datos(carpeta, vehiculos, historial, siguiente_id):
     try:
-        # Guardamos los vehículos como registros separados por punto y coma.
+        # Abrimos el archivo de vehículos para escritura.
+        # El modo "w" reemplaza el contenido anterior.
         with open(
             os.path.join(carpeta, "vehiculos.csv"),
             "w",
             encoding="utf-8"
         ) as archivo:
 
-            # Escribimos una línea por cada vehículo.
+            # Convertimos cada vehículo a texto y escribimos una línea.
             for vehiculo in vehiculos:
                 archivo.write(convertir_a_registro(vehiculo))
 
-        # Abrimos el archivo JSON para guardar el historial completo.
+        # Abrimos el archivo del historial para escritura.
         with open(
             os.path.join(carpeta, "ventas.json"),
             "w",
             encoding="utf-8"
         ) as archivo:
 
-            # Convertimos la lista de ventas a JSON y la escribimos.
-            # indent=4 organiza el texto para facilitar su lectura.
+            # Guardamos la lista de ventas en formato JSON.
+            # indent=4 agrega espacios para facilitar la lectura.
             json.dump(historial, archivo, indent=4)
 
-        # Guardamos el número que recibirá el próximo vehículo.
+        # Abrimos el archivo que conserva el próximo ID.
         with open(
             os.path.join(carpeta, "siguiente_id.txt"),
             "w",
             encoding="utf-8"
         ) as archivo:
+
+            # Convertimos el ID a texto y agregamos un salto de línea.
             archivo.write(f"{siguiente_id}\n")
 
     except (OSError, UnicodeError) as error:
-        # Avisamos si ocurrió un problema durante la escritura.
+        # Informamos el problema si falla la escritura.
         print("No se completó el guardado:", error)
-        print("Los archivos pueden haber quedado incompletos. No borre las copias .bak.")
+        print("Los archivos pueden haber quedado incompletos. Reintente guardar antes de cerrar.")
         return False
 
-    # Los tres archivos se guardaron correctamente.
+    # Indicamos que los tres archivos se guardaron correctamente.
     return True
+
 
 ## Clase 10: lectura y escritura de archivos de texto y CSV.
 # Clase 11: json.dump guarda el historial y json.load lo recupera.

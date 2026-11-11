@@ -70,7 +70,7 @@ def test_guardar_y_recuperar():
     try:
         v_orig, h_orig, sig_orig = crear_estado()
 
-        guardado_ok = a.guardar_datos(carpeta, v_orig, h_orig, sig_orig, crear_respaldo=False)
+        guardado_ok = a.guardar_datos(carpeta, v_orig, h_orig, sig_orig)
 
         assert guardado_ok is True
 
@@ -99,7 +99,7 @@ def test_vacios_con_contador_conservado():
     carpeta = preparar_carpeta_prueba()
 
     try:
-        assert a.guardar_datos(carpeta, [], [], 8, crear_respaldo=False) is True
+        assert a.guardar_datos(carpeta, [], [], 8) is True
 
         assert a.cargar_datos(carpeta) == ([], [], 8, True)
 
@@ -118,7 +118,7 @@ def test_descuento_total():
             registro["venta"]["descuento"] = 100
             registro["venta"]["precio_venta"] = 0
 
-        assert a.guardar_datos(carpeta, vehiculos, historial, siguiente, crear_respaldo=False) is True
+        assert a.guardar_datos(carpeta, [], [], 8) is True
 
         assert a.cargar_datos(carpeta) == (vehiculos, historial, siguiente, True)
 
@@ -135,7 +135,7 @@ def test_modificacion_y_historial():
         vehiculos["precio"] = 25000.0
         vehiculos["color"] = "Gris"
 
-        assert a.guardar_datos(carpeta, vehiculos, historial, siguiente, crear_respaldo=False) is True
+        assert a.guardar_datos(carpeta, [], [], 8) is True
 
         leidos, ventas, _, correcto = a.cargar_datos(carpeta)
 
@@ -155,32 +155,9 @@ def test_eliminacion_con_historial():
     try:
         _, historial, siguiente = crear_estado()
 
-        assert a.guardar_datos(carpeta, [], historial, siguiente, crear_respaldo=False) is True
+        assert a.guardar_datos(carpeta, [], [], 8) is True
 
         assert a.cargar_datos(carpeta) == ([], historial, siguiente, True)
-
-    finally:
-        borrar_carpeta_prueba(carpeta)
-
-
-def test_respaldo_anterior():
-    """Comprueba que se generen copias de seguridad al modificar los archivos."""
-    carpeta = preparar_carpeta_prueba()
-
-    try:
-        vehiculos, historial, siguiente = crear_estado()
-
-        a.guardar_datos(carpeta, vehiculos, historial, siguiente, crear_respaldo=False)
-
-        vehiculos["color"] = "Verde"
-
-        guardado_ok = a.guardar_datos(carpeta, vehiculos, historial, siguiente, crear_respaldo=True)
-
-        assert guardado_ok is True
-
-        assert os.path.exists(os.path.join(carpeta, "vehiculos.csv.bak"))
-        assert os.path.exists(os.path.join(carpeta, "ventas.csv.bak"))
-        assert os.path.exists(os.path.join(carpeta, "siguiente_id.txt.bak"))
 
     finally:
         borrar_carpeta_prueba(carpeta)
