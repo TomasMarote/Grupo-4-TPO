@@ -1,5 +1,4 @@
 # Manejo de archivos con las herramientas de la clase 10.
-# Los CSV son texto UTF-8 sin encabezado, con campos separados por ;.
 import os
 import json
 

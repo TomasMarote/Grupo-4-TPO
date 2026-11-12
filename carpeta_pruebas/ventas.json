@@ -1,0 +1,23 @@
+[
+    {
+        "id": 1,
+        "marca": "Toyota",
+        "modelo": "Corolla",
+        "a\u00f1o": 2020,
+        "kilometraje": 20000,
+        "combustible": "H\u00edbrido",
+        "color": "Blanco",
+        "precio": 20000.0,
+        "moneda": "USD",
+        "vendido": true,
+        "venta": {
+            "cliente": "Mar\u00eda P\u00e9rez",
+            "dni": "00123",
+            "telefono": "",
+            "precio_base": 20000.0,
+            "descuento": 10.0,
+            "precio_venta": 18000.0,
+            "moneda": "USD"
+        }
+    }
+]
