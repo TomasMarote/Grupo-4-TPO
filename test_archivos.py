@@ -1,163 +1,170 @@
 import os
-import shutil
 import archivos as a
 
 
-def preparar_carpeta_prueba():
-    """Prepara una carpeta temporal para realizar las pruebas."""
-    carpeta = "carpeta_prueba_temp"
+# Usamos una carpeta exclusiva para los datos ficticios.
+# Debe crearse manualmente junto a los archivos Python.
+CARPETA = os.path.join(
+    os.path.dirname(__file__), "carpeta_pruebas"
+)
 
-    if os.path.exists(carpeta):
-        shutil.rmtree(carpeta)
-
-    os.makedirs(carpeta)
-
-    return carpeta
-
-
-def borrar_carpeta_prueba(carpeta):
-    """Elimina la carpeta temporal utilizada en las pruebas."""
-    if os.path.exists(carpeta):
-        shutil.rmtree(carpeta)
 
 def crear_estado():
-    """Crea datos de prueba con vehículos, historial de ventas y siguiente ID."""
+    # Creamos un vehículo disponible y otro vendido.
     vehiculos = [
         {
-            "id": 0, "marca": "Ford", "modelo": "Focus", "año": 2015,
-            "kilometraje": 90000, "combustible": "Nafta", "color": "Azul",
-            "precio": 10000.0, "moneda": "USD", "vendido": False
+            "id": 0,
+            "marca": "Ford",
+            "modelo": "Focus",
+            "año": 2015,
+            "kilometraje": 90000,
+            "combustible": "Nafta",
+            "color": "Azul",
+            "precio": 10000.0,
+            "moneda": "USD",
+            "vendido": False
         },
         {
-            "id": 1, "marca": "Toyota", "modelo": "Corolla", "año": 2020,
-            "kilometraje": 20000, "combustible": "Híbrido", "color": "Blanco",
-            "precio": 20000.0, "moneda": "USD", "vendido": True,
+            "id": 1,
+            "marca": "Toyota",
+            "modelo": "Corolla",
+            "año": 2020,
+            "kilometraje": 20000,
+            "combustible": "Híbrido",
+            "color": "Blanco",
+            "precio": 20000.0,
+            "moneda": "USD",
+            "vendido": True,
             "venta": {
-                "cliente": "María Pérez", "dni": "00123", "telefono": "",
-                "precio_base": 20000.0, "descuento": 10.0,
-                "precio_venta": 18000.0, "moneda": "USD"
+                "cliente": "María Pérez",
+                "dni": "00123",
+                "telefono": "",
+                "precio_base": 20000.0,
+                "descuento": 10.0,
+                "precio_venta": 18000.0,
+                "moneda": "USD"
             }
         }
     ]
 
-    registro = vehiculos.copy()
-    registro["venta"] = vehiculos["venta"].copy()
-    historial = [registro]
-    siguiente = 2
+    # Creamos otro diccionario para el historial.
+    # Copiamos los campos del vehículo vendido mediante un for.
+    registro = {}
 
-    return vehiculos, historial, siguiente
+    for clave, valor in vehiculos[1].items():
+        if clave != "venta":
+            registro[clave] = valor
+
+    # La venta también necesita un diccionario independiente.
+    registro["venta"] = {}
+
+    for clave, valor in vehiculos[1]["venta"].items():
+        registro["venta"][clave] = valor
+
+    historial = [registro]
+    siguiente_id = 2
+
+    return vehiculos, historial, siguiente_id
 
 
 def test_primera_ejecucion():
-    """Comprueba la carga inicial cuando todavía no existen archivos."""
-    carpeta = preparar_carpeta_prueba()
+    # Consultamos una ruta donde no existen archivos.
+    # No hay que crear ni guardar datos en "sin_archivos".
+    ruta = os.path.join(CARPETA, "sin_archivos")
 
-    try:
-        vehiculos, historial, siguiente_id, exito = a.cargar_datos(carpeta)
+    # Debe iniciar sin vehículos, sin ventas y con ID inicial 0.
+    assert a.cargar_datos(ruta) == ([], [], 0, True)
 
-        assert exito is True
-        assert vehiculos == []
-        assert historial == []
-        assert siguiente_id == 0
-
-    finally:
-        borrar_carpeta_prueba(carpeta)
 
 def test_guardar_y_recuperar():
-    """Comprueba que los datos puedan guardarse y recuperarse correctamente."""
-    carpeta = preparar_carpeta_prueba()
+    vehiculos, historial, siguiente = crear_estado()
 
-    try:
-        v_orig, h_orig, sig_orig = crear_estado()
+    # Guardamos los datos ficticios.
+    assert a.guardar_datos(
+        CARPETA, vehiculos, historial, siguiente
+    ) is True
 
-        guardado_ok = a.guardar_datos(carpeta, v_orig, h_orig, sig_orig)
+    # Recuperamos lo que acabamos de guardar.
+    leidos, ventas, contador, correcto = a.cargar_datos(CARPETA)
 
-        assert guardado_ok is True
+    assert correcto is True
+    assert leidos == vehiculos
+    assert ventas == historial
+    assert contador == siguiente
 
-        vehiculos, historial, siguiente_id, exito = a.cargar_datos(carpeta)
+    # Verificamos que los números conserven sus tipos.
+    assert isinstance(leidos[0]["id"], int)
+    assert isinstance(leidos[0]["precio"], float)
+    assert leidos[0]["vendido"] is False
 
-        assert exito is True
-        assert len(vehiculos) == 2
-        assert len(historial) == 1
-        assert siguiente_id == 2
+    # El DNI conserva sus ceros iniciales y el teléfono vacío.
+    assert leidos[1]["venta"]["dni"] == "00123"
+    assert leidos[1]["venta"]["telefono"] == ""
 
-        assert isinstance(vehiculos["id"], int)
-        assert isinstance(vehiculos["precio"], float)
-        assert vehiculos["vendido"] is False
-
-        assert vehiculos["venta"]["dni"] == "00123"
-        assert vehiculos["venta"]["telefono"] == ""
-
-        assert vehiculos["venta"] is not historial["venta"]
-
-    finally:
-        borrar_carpeta_prueba(carpeta)
+    # Cambiar una venta leída no debe modificar el historial.
+    leidos[1]["venta"]["cliente"] = "Otro cliente"
+    assert ventas[0]["venta"]["cliente"] == "María Pérez"
 
 
 def test_vacios_con_contador_conservado():
-    """Comprueba que se puedan guardar listas vacías conservando el siguiente ID."""
-    carpeta = preparar_carpeta_prueba()
+    # Aunque no haya vehículos ni ventas, conservamos el contador.
+    assert a.guardar_datos(CARPETA, [], [], 8) is True
 
-    try:
-        assert a.guardar_datos(carpeta, [], [], 8) is True
-
-        assert a.cargar_datos(carpeta) == ([], [], 8, True)
-
-    finally:
-        borrar_carpeta_prueba(carpeta)
+    assert a.cargar_datos(CARPETA) == ([], [], 8, True)
 
 
 def test_descuento_total():
-    """Comprueba que se puedan guardar y recuperar ventas con descuento del 100%."""
-    carpeta = preparar_carpeta_prueba()
+    vehiculos, historial, siguiente = crear_estado()
 
-    try:
-        vehiculos, historial, siguiente = crear_estado()
+    # Aplicamos el descuento al vehículo vendido y al historial.
+    for registro in [vehiculos[1], historial[0]]:
+        registro["venta"]["descuento"] = 100
+        registro["venta"]["precio_venta"] = 0
 
-        for registro in [vehiculos, historial]:
-            registro["venta"]["descuento"] = 100
-            registro["venta"]["precio_venta"] = 0
+    # Guardamos los datos modificados, no listas vacías.
+    assert a.guardar_datos(
+        CARPETA, vehiculos, historial, siguiente
+    ) is True
 
-        assert a.guardar_datos(carpeta, [], [], 8) is True
+    assert a.cargar_datos(CARPETA) == (
+        vehiculos, historial, siguiente, True
+    )
 
-        assert a.cargar_datos(carpeta) == (vehiculos, historial, siguiente, True)
-
-    finally:
-        borrar_carpeta_prueba(carpeta)
 
 def test_modificacion_y_historial():
-    """Comprueba que modificar los datos de un vehículo no altere el historial de ventas."""
-    carpeta = preparar_carpeta_prueba()
+    vehiculos, historial, siguiente = crear_estado()
 
-    try:
-        vehiculos, historial, siguiente = crear_estado()
+    # Modificamos el vehículo, pero no su registro histórico.
+    vehiculos[1]["precio"] = 25000.0
+    vehiculos[1]["color"] = "Gris"
 
-        vehiculos["precio"] = 25000.0
-        vehiculos["color"] = "Gris"
+    assert a.guardar_datos(
+        CARPETA, vehiculos, historial, siguiente
+    ) is True
 
-        assert a.guardar_datos(carpeta, [], [], 8) is True
+    leidos, ventas, contador, correcto = a.cargar_datos(CARPETA)
 
-        leidos, ventas, _, correcto = a.cargar_datos(carpeta)
+    assert correcto is True
+    assert contador == siguiente
 
-        assert correcto is True
-        assert leidos["precio"] == 25000.0
-        assert ventas["precio"] == 20000.0
-        assert ventas["color"] == "Blanco"
+    # El vehículo conserva los datos nuevos.
+    assert leidos[1]["precio"] == 25000.0
+    assert leidos[1]["color"] == "Gris"
 
-    finally:
-        borrar_carpeta_prueba(carpeta)
+    # El historial conserva los datos anteriores.
+    assert ventas[0]["precio"] == 20000.0
+    assert ventas[0]["color"] == "Blanco"
 
 
 def test_eliminacion_con_historial():
-    """Comprueba que el historial se conserve aunque se eliminen todos los vehículos."""
-    carpeta = preparar_carpeta_prueba()
+    vehiculos, historial, siguiente = crear_estado()
 
-    try:
-        _, historial, siguiente = crear_estado()
+    # Simulamos eliminar todos los vehículos.
+    # El historial y el contador deben conservarse.
+    assert a.guardar_datos(
+        CARPETA, [], historial, siguiente
+    ) is True
 
-        assert a.guardar_datos(carpeta, [], [], 8) is True
-
-        assert a.cargar_datos(carpeta) == ([], historial, siguiente, True)
-
-    finally:
-        borrar_carpeta_prueba(carpeta)
+    assert a.cargar_datos(CARPETA) == (
+        [], historial, siguiente, True
+    )
